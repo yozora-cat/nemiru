@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>底値図鑑</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    background:#f5f5f5;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:800px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    font-size:16px;
+    box-sizing:border-box;
+}
+
+.rank{
+    padding:10px 0;
+    border-bottom:1px solid #eee;
+}
+
+.good{
+    color:green;
+    font-weight:bold;
+}
+
+.bad{
+    color:red;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🛒 底値図鑑</h1>
+
+    <div class="card">
+        <h2>商品検索</h2>
+        <input type="text" value="アタック抗菌EX">
+    </div>
+
+    <div class="card">
+        <h2>買い時判定</h2>
+
+        <p>現在価格：398円</p>
+        <p>過去90日底値：298円</p>
+        <p>平均価格：378円</p>
+
+        <p class="bad">
+            今はやや高めです
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>近所の価格ランキング</h2>
+
+        <div class="rank">🥇 コスモス　298円</div>
+        <div class="rank">🥈 ダイレックス　318円</div>
+        <div class="rank">🥉 サニー　328円</div>
+        <div class="rank">4位 マックスバリュ　348円</div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
