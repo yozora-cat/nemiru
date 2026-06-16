@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>底値図鑑</title>
+<title>トクミル</title>
 
 <style>
 body{
@@ -54,13 +54,26 @@ input{
 
 <div class="container">
 
-    <h1>🛒 底値図鑑</h1>
+    <h1>🛒 トクミル</h1>
 
-    <div class="card">
-        <h2>商品検索</h2>
-        <input type="text" value="アタック抗菌EX">
-    </div>
+<div class="card">
+    <h2>商品検索</h2>
 
+    <input id="productName" type="text" value="アタック抗菌EX">
+
+    <button onclick="searchProduct()">
+        検索
+    </button>
+</div>
+
+<div id="result" class="card">
+        <h2>検索結果</h2>
+    <p>商品を検索してください</p>
+</div>
+<div id="ranking" class="card">
+    <h2>店舗ランキング</h2>
+    <p>商品を検索してください</p>
+</div>
     <div class="card">
         <h2>買い時判定</h2>
 
@@ -84,6 +97,6 @@ input{
     </div>
 
 </div>
-
+<script src="app.js"></script>
 </body>
 </html>
