@@ -1,27 +1,10 @@
-
-const products = {
-  "アタック抗菌EX": {
-    currentPrice: 398,
-    lowestPrice: 298,
-    averagePrice: 378,
-    stores: [
-      { name: "コスモス", price: 298 },
-      { name: "ダイレックス", price: 318 },
-      { name: "サニー", price: 328 }
-    ]
-  },
-
-  "ネピアティッシュ": {
-    currentPrice: 198,
-    lowestPrice: 148,
-    averagePrice: 178,
-    stores: [
-      { name: "サニー", price: 148 },
-      { name: "コスモス", price: 158 },
-      { name: "ダイレックス", price: 168 }
-    ]
-  }
-};
+let products = {};
+fetch("products.json")
+  .then(response => response.json())
+  .then(data => {
+      products = data;
+      console.log("商品データ読み込み完了");
+  });
 console.log("トクミル 起動");
 console.log(products);
 function searchProduct() {
