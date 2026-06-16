@@ -15,13 +15,29 @@ function searchProduct() {
     console.log("検索:", name);
 
     const product = products[name];
-
+    let score =
+    Math.round(
+        (product.lowestPrice / product.currentPrice)
+        * 100
+    );
+    let judgement = "";
+    if(score >= 95){
+    judgement = "🟢 今が買い時！";
+  }
+else if(score >= 80){
+    judgement = "🟡 普通";
+}
+else{
+    judgement = "🔴 まだ高い";
+}
     if(product){
      document.getElementById("result").innerHTML = `
      <h2>${name}</h2>
      <p>現在価格：${product.currentPrice}円</p>
      <p>底値：${product.lowestPrice}円</p>
      <p>平均価格：${product.averagePrice}円</p>
+     <p>買い時スコア：${score}点</p>
+     <p>${judgement}</p>
      `;
      let rankingHtml = `
 <h2>店舗ランキング</h2>
