@@ -54,3 +54,31 @@ document.getElementById("ranking").innerHTML = rankingHtml;
         alert("商品が見つかりません");
     }
 }
+function addPrice() {
+
+    const product =
+        document.getElementById("newProduct").value;
+
+    const store =
+        document.getElementById("newStore").value;
+
+    const price =
+        document.getElementById("newPrice").value;
+
+    console.log("商品:", product);
+    console.log("店舗:", store);
+    console.log("価格:", price);
+if (products[product]) {
+
+    products[product].stores.push({
+        name: store,
+        price: Number(price)
+    });
+
+    products[product].stores.sort(
+        (a, b) => a.price - b.price
+    );
+
+}
+    alert("価格を登録しました");
+}
