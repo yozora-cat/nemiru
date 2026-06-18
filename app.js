@@ -103,3 +103,31 @@ if (products[product]) {
 }
     alert("価格を登録しました");
 }
+async function loadPrices() {
+
+    const { data, error } = await db
+        .from("prices")
+        .select("*");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    console.log("取得した価格データ", data);
+    const list = document.getElementById("price-list");
+
+list.innerHTML = "";
+
+data.forEach(item => {
+    list.innerHTML += `
+        <p>
+            ${item.store_name}
+            ：
+            ${item.price}円
+        </p>
+    `;
+});
+}
+
+loadPrices();
