@@ -1,3 +1,6 @@
+const supabaseUrl = 'https://kbrrfilzdqshlimsgkdy.supabase.co'
+const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
+const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = {};
 fetch("products.json")
   .then(response => response.json())
@@ -5,7 +8,8 @@ fetch("products.json")
       products = data;
       console.log("商品データ読み込み完了");
   });
-console.log("トクミル 起動");
+console.log("ネミル 起動");
+console.log("Supabase接続完了");
 console.log(products);
 function searchProduct() {
 
@@ -54,7 +58,7 @@ document.getElementById("ranking").innerHTML = rankingHtml;
         alert("商品が見つかりません");
     }
 }
-function addPrice() {
+async function addPrice() {
 
     const product =
         document.getElementById("newProduct").value;
@@ -68,6 +72,23 @@ function addPrice() {
     console.log("商品:", product);
     console.log("店舗:", store);
     console.log("価格:", price);
+    const { data, error } = await db
+    .from("prices")
+    .insert([
+        {
+            product_name: product,
+            store_name: store,
+            price: Number(price)
+        }
+    ]);
+
+if(error){
+    console.error(error);
+    alert("保存失敗");
+    return;
+}
+
+alert("Supabaseに保存成功！");
 if (products[product]) {
 
     products[product].stores.push({
