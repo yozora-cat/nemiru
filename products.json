@@ -1,41 +1,62 @@
 {
-  "アタック抗菌EX": {
-    "currentPrice": 398,
-    "lowestPrice": 298,
-    "averagePrice": 378,
-    "stores": [
-      {
-        "name": "コスモス",
-        "price": 298
-      },
-      {
-        "name": "ダイレックス",
-        "price": 318
-      },
-      {
-        "name": "サニー",
-        "price": 328
-      }
-    ]
-  },
-
-  "ボールド": {
-    "currentPrice": 198,
-    "lowestPrice": 148,
-    "averagePrice": 178,
-    "stores": [
-      {
-        "name": "サニー",
-        "price": 148
-      },
-      {
-        "name": "コスモス",
-        "price": 158
-      },
-      {
-        "name": "ダイレックス",
-        "price": 168
-      }
-    ]
-  }
+"アタック抗菌EX": {
+"currentPrice": 298,
+"lowestPrice": 198,
+"averagePrice": 278,
+"stores": []
+},
+"ボールド": {
+"currentPrice": 328,
+"lowestPrice": 248,
+"averagePrice": 298,
+"stores": []
+},
+"アリエール": {
+"currentPrice": 348,
+"lowestPrice": 268,
+"averagePrice": 318,
+"stores": []
+},
+"トップ スーパーNANOX": {
+"currentPrice": 358,
+"lowestPrice": 278,
+"averagePrice": 328,
+"stores": []
+},
+"さらさ": {
+"currentPrice": 398,
+"lowestPrice": 318,
+"averagePrice": 368,
+"stores": []
+},
+"キュキュット": {
+"currentPrice": 198,
+"lowestPrice": 148,
+"averagePrice": 178,
+"stores": []
+},
+"ジョイ": {
+"currentPrice": 188,
+"lowestPrice": 138,
+"averagePrice": 168,
+"stores": []
+},
+"ウタマロクリーナー": {
+"currentPrice": 398,
+"lowestPrice": 298,
+"averagePrice": 348,
+"stores": []
+},
+"パンパース": {
+"currentPrice": 1780,
+"lowestPrice": 1380,
+"averagePrice": 1580,
+"stores": []
+},
+"メリーズ": {
+"currentPrice": 1680,
+"lowestPrice": 1280,
+"averagePrice": 1480,
+"stores": []
+}
 }
