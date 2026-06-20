@@ -60,7 +60,7 @@ product.stores.forEach((store, index) => {
 });
 
 document.getElementById("ranking").innerHTML = rankingHtml;
-await loadProductPrices(name);
+await loadPrices(name);
     }else{
         alert("商品が見つかりません");
     }
@@ -119,7 +119,7 @@ async function addPrice() {
     ]);
 
 if(error){
-    console.error(error);
+    console.error("エラー詳細:", error);
     alert("保存失敗");
     return;
 }
@@ -141,11 +141,17 @@ if (products[product]) {
 }
     alert("価格を登録しました");
 }
-async function loadPrices() {
+async function loadPrices(productName = "") {
 
-    const { data, error } = await db
+    let query = db
         .from("prices")
-        .select("*")
+        .select("*");
+
+    if (productName) {
+        query = query.eq("product_name", productName);
+    }
+
+    const { data, error } = await query
         .order("price", { ascending: true });
 
     if (error) {
