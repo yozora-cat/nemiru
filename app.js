@@ -11,7 +11,7 @@ fetch("products.json")
 console.log("ネミル 起動");
 console.log("Supabase接続完了");
 console.log(products);
-function searchProduct() {
+async function searchProduct() {
 
     const name =
         document.getElementById("productName").value;
@@ -19,6 +19,12 @@ function searchProduct() {
     console.log("検索:", name);
 
     const product = products[name];
+
+    if(!product){
+        alert("商品が見つかりません");
+        return;
+    }
+
     let score =
     Math.round(
         (product.lowestPrice / product.currentPrice)
@@ -54,9 +60,39 @@ product.stores.forEach((store, index) => {
 });
 
 document.getElementById("ranking").innerHTML = rankingHtml;
+await loadProductPrices(name);
     }else{
         alert("商品が見つかりません");
     }
+}
+async function loadProductPrices(productName) {
+
+    const { data, error } = await db
+        .from("prices")
+        .select("*")
+        .eq("product_name", productName)
+        .order("price", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    let rankingHtml = `
+<h2>店舗ランキング</h2>
+`;
+
+    if (!data || data.length === 0) {
+        rankingHtml += `<p>価格データがありません</p>`;
+    } else {
+        data.forEach((item, index) => {
+            rankingHtml += `
+    <p>${index + 1}位 ${item.store_name} ${item.price}円</p>
+    `;
+        });
+    }
+
+    document.getElementById("ranking").innerHTML = rankingHtml;
 }
 async function addPrice() {
 
