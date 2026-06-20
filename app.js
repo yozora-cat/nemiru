@@ -89,6 +89,8 @@ if(error){
 }
 
 alert("Supabaseに保存成功！");
+await loadPrices();
+
 if (products[product]) {
 
     products[product].stores.push({
@@ -107,7 +109,8 @@ async function loadPrices() {
 
     const { data, error } = await db
         .from("prices")
-        .select("*");
+        .select("*")
+        .order("price", { ascending: true });
 
     if (error) {
         console.error(error);
@@ -119,13 +122,15 @@ async function loadPrices() {
 
 list.innerHTML = "";
 
-data.forEach(item => {
+data.forEach((item, index) => {
     list.innerHTML += `
-        <p>
+        <div class="rank">
+            #${index + 1}
+            ${item.product_name}
             ${item.store_name}
             ：
             ${item.price}円
-        </p>
+        </div>
     `;
 });
 }
