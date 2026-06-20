@@ -25,9 +25,14 @@ async function searchProduct() {
         return;
     }
 
+    const priceData = await loadPrices(name);
+    const stats = calculatePriceStats(priceData);
+    const lowestPriceText = stats.count > 0 ? `${stats.lowestPrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
+    const averagePriceText = stats.count > 0 ? `${stats.averagePrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
+
     let score =
     Math.round(
-        (product.lowestPrice / product.currentPrice)
+        ((stats.lowestPrice || 0) / product.currentPrice)
         * 100
     );
     let judgement = "";
@@ -49,6 +54,24 @@ else{
      <p>買い時スコア：${score}点</p>
      <p>${judgement}</p>
      `;
+     document.getElementById("result").innerHTML = `
+     <h2>${name}</h2>
+     <p>現在価格：${product.currentPrice}円</p>
+     <p>最安値：${lowestPriceText}</p>
+     <p>平均価格：${averagePriceText}</p>
+     <p>投稿件数：${stats.count}件</p>
+     <p>買い時スコア：${score}点</p>
+     <p>${judgement}</p>
+     `;
+     document.getElementById("result").innerHTML = `
+     <h2>${name}</h2>
+     <p>&#29694;&#22312;&#20385;&#26684;: ${product.currentPrice}&#20870;</p>
+     <p>&#26368;&#23433;&#20516;: ${lowestPriceText}</p>
+     <p>&#24179;&#22343;&#20385;&#26684;: ${averagePriceText}</p>
+     <p>&#25237;&#31295;&#20214;&#25968;: ${stats.count}&#20214;</p>
+     <p>&#36023;&#12356;&#26178;&#12473;&#12467;&#12450;: ${score}&#28857;</p>
+     <p>${judgement}</p>
+     `;
      let rankingHtml = `
 <h2>店舗ランキング</h2>
 `;
@@ -60,10 +83,51 @@ product.stores.forEach((store, index) => {
 });
 
 document.getElementById("ranking").innerHTML = rankingHtml;
-await loadPrices(name);
+renderProductRanking(priceData);
     }else{
         alert("商品が見つかりません");
     }
+}
+function calculatePriceStats(priceData) {
+
+    const prices = (priceData || [])
+        .map(item => Number(item.price))
+        .filter(price => !Number.isNaN(price));
+
+    if (prices.length === 0) {
+        return {
+            lowestPrice: 0,
+            averagePrice: 0,
+            count: 0
+        };
+    }
+
+    const total = prices.reduce((sum, price) => sum + price, 0);
+
+    return {
+        lowestPrice: Math.min(...prices),
+        averagePrice: Math.round(total / prices.length),
+        count: prices.length
+    };
+}
+
+function renderProductRanking(priceData) {
+
+    let rankingHtml = `
+<h2>店舗ランキング</h2>
+`;
+
+    if (!priceData || priceData.length === 0) {
+        rankingHtml += `<p>価格データがありません</p>`;
+    } else {
+        priceData.forEach((item, index) => {
+            rankingHtml += `
+    <p>${index + 1}位 ${item.store_name} ${item.price}円</p>
+    `;
+        });
+    }
+
+    document.getElementById("ranking").innerHTML = rankingHtml;
 }
 async function loadProductPrices(productName) {
 
@@ -75,7 +139,7 @@ async function loadProductPrices(productName) {
 
     if (error) {
         console.error(error);
-        return;
+        return [];
     }
 
     let rankingHtml = `
@@ -156,7 +220,7 @@ async function loadPrices(productName = "") {
 
     if (error) {
         console.error(error);
-        return;
+        return [];
     }
 
     console.log("取得した価格データ", data);
@@ -175,6 +239,8 @@ data.forEach((item, index) => {
         </div>
     `;
 });
+
+return data;
 }
 
 loadPrices();
