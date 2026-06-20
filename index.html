@@ -33,9 +33,65 @@ input{
     box-sizing:border-box;
 }
 
+button{
+    margin-top:12px;
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px;
+    margin:16px 0;
+}
+
+.stat-card{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:8px;
+    padding:14px;
+}
+
+.stat-label{
+    color:#64748b;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.stat-value{
+    color:#111827;
+    font-size:20px;
+    font-weight:bold;
+}
+
 .rank{
-    padding:10px 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 0;
     border-bottom:1px solid #eee;
+}
+
+.rank-label{
+    min-width:36px;
+    color:#111827;
+    font-weight:bold;
+}
+
+.rank-main{
+    flex:1;
+}
+
+.rank-price{
+    color:#111827;
+    font-weight:bold;
 }
 
 .good{
@@ -46,6 +102,25 @@ input{
 .bad{
     color:red;
     font-weight:bold;
+}
+
+@media (max-width:600px){
+    body{
+        padding:12px;
+    }
+
+    .card{
+        padding:16px;
+        border-radius:8px;
+    }
+
+    .stats-grid{
+        grid-template-columns:1fr;
+    }
+
+    .rank{
+        align-items:flex-start;
+    }
 }
 </style>
 </head>

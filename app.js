@@ -66,9 +66,20 @@ else{
      document.getElementById("result").innerHTML = `
      <h2>${name}</h2>
      <p>&#29694;&#22312;&#20385;&#26684;: ${product.currentPrice}&#20870;</p>
-     <p>&#26368;&#23433;&#20516;: ${lowestPriceText}</p>
-     <p>&#24179;&#22343;&#20385;&#26684;: ${averagePriceText}</p>
-     <p>&#25237;&#31295;&#20214;&#25968;: ${stats.count}&#20214;</p>
+     <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">&#26368;&#23433;&#20516;</div>
+            <div class="stat-value">${lowestPriceText}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">&#24179;&#22343;&#20385;&#26684;</div>
+            <div class="stat-value">${averagePriceText}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">&#25237;&#31295;&#20214;&#25968;</div>
+            <div class="stat-value">${stats.count}&#20214;</div>
+        </div>
+     </div>
      <p>&#36023;&#12356;&#26178;&#12473;&#12467;&#12450;: ${score}&#28857;</p>
      <p>${judgement}</p>
      `;
@@ -111,7 +122,67 @@ function calculatePriceStats(priceData) {
     };
 }
 
+function getLatestPricesByStore(priceData) {
+
+    const latestPrices = {};
+
+    (priceData || []).forEach(item => {
+        const key = `${item.product_name}__${item.store_name}`;
+        const current = latestPrices[key];
+
+        if (!current || isNewerPrice(item, current)) {
+            latestPrices[key] = item;
+        }
+    });
+
+    return Object.values(latestPrices).sort(
+        (a, b) => Number(a.price) - Number(b.price)
+    );
+}
+
+function isNewerPrice(item, current) {
+
+    const itemTime = new Date(item.created_at || 0).getTime();
+    const currentTime = new Date(current.created_at || 0).getTime();
+
+    if (itemTime !== currentTime) {
+        return itemTime > currentTime;
+    }
+
+    return Number(item.id || 0) > Number(current.id || 0);
+}
+
+function getRankLabel(index) {
+
+    const medals = ["&#129351;", "&#129352;", "&#129353;"];
+
+    return medals[index] || `#${index + 1}`;
+}
+
 function renderProductRanking(priceData) {
+
+    {
+        let rankingHtml = `
+<h2>&#24215;&#33303;&#12521;&#12531;&#12461;&#12531;&#12464;</h2>
+`;
+
+        if (!priceData || priceData.length === 0) {
+            rankingHtml += `<p>&#20385;&#26684;&#12487;&#12540;&#12479;&#12364;&#12354;&#12426;&#12414;&#12379;&#12435;</p>`;
+        } else {
+            priceData.forEach((item, index) => {
+                rankingHtml += `
+    <div class="rank">
+        <span class="rank-label">${getRankLabel(index)}</span>
+        <span class="rank-main">${item.store_name}</span>
+        <span class="rank-price">${item.price}&#20870;</span>
+    </div>
+    `;
+            });
+        }
+
+        document.getElementById("ranking").innerHTML = rankingHtml;
+        return;
+    }
 
     let rankingHtml = `
 <h2>店舗ランキング</h2>
@@ -224,11 +295,26 @@ async function loadPrices(productName = "") {
     }
 
     console.log("取得した価格データ", data);
+    const latestData = getLatestPricesByStore(data);
     const list = document.getElementById("price-list");
 
 list.innerHTML = "";
 
-data.forEach((item, index) => {
+{
+latestData.forEach((item, index) => {
+    list.innerHTML += `
+        <div class="rank">
+            <span class="rank-label">${getRankLabel(index)}</span>
+            <span class="rank-main">${item.product_name}<br>${item.store_name}</span>
+            <span class="rank-price">${item.price}&#20870;</span>
+        </div>
+    `;
+});
+
+return latestData;
+}
+
+latestData.forEach((item, index) => {
     list.innerHTML += `
         <div class="rank">
             #${index + 1}
@@ -240,7 +326,7 @@ data.forEach((item, index) => {
     `;
 });
 
-return data;
+return latestData;
 }
 
 loadPrices();
