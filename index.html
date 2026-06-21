@@ -122,6 +122,21 @@ button{
         align-items:flex-start;
     }
 }
+.suggestions {
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background: #f0f0f0;
+}
 </style>
 </head>
 
@@ -135,6 +150,8 @@ button{
     <h2>商品検索</h2>
 
     <input id="productName" type="text" value="アタック抗菌EX">
+
+    <div id="suggestions" class="suggestions"></div>
 
     <button onclick="searchProduct()">
         検索
@@ -158,7 +175,7 @@ button{
     <input id="newProduct"
            type="text"
            placeholder="商品名">
-
+<div id="newSuggestions" class="suggestions"></div>
     <br><br>
 
     <input id="newStore"
@@ -166,7 +183,8 @@ button{
            placeholder="店舗名">
 
     <br><br>
-
+<div id="storeSuggestions"
+     class="suggestions"></div>
     <input id="newPrice"
            type="number"
            placeholder="価格">

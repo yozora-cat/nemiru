@@ -8,6 +8,13 @@ fetch("products.json")
       products = data;
       console.log("商品データ読み込み完了");
   });
+let stores = [];
+fetch("stores.json")
+    .then(response => response.json())
+    .then(data => {
+        stores = data;
+        console.log("店舗データ読み込み完了");
+    });
 console.log("ネミル 起動");
 console.log("Supabase接続完了");
 console.log(products);
@@ -330,3 +337,245 @@ return latestData;
 }
 
 loadPrices();
+const productInput = document.getElementById("productName");
+const suggestionsBox = document.getElementById("suggestions");
+const newProductInput =
+    document.getElementById("newProduct");
+
+const newSuggestionsBox =
+    document.getElementById("newSuggestions");
+
+const storeInput =
+    document.getElementById("newStore");
+
+const storeSuggestionsBox =
+    document.getElementById("storeSuggestions");
+productInput.addEventListener("input", () => {
+
+    const keyword = productInput.value.trim();
+
+    suggestionsBox.innerHTML = "";
+
+    if (!keyword) return;
+
+    const matches = Object.keys(products).filter(name =>
+        name.includes(keyword)
+    );
+
+    matches.forEach(name => {
+
+        const item = document.createElement("div");
+
+        item.textContent = name;
+
+        item.className = "suggestion-item";
+
+        item.onclick = () => {
+            productInput.value = name;
+            suggestionsBox.innerHTML = "";
+           searchProduct();
+        };
+
+        suggestionsBox.appendChild(item);
+    });
+
+});
+storeInput.addEventListener("input", () => {
+
+    const keyword = storeInput.value.trim();
+
+    storeSuggestionsBox.innerHTML = "";
+
+    if (!keyword) return;
+
+    const matches = stores.filter(store =>
+        store.startsWith(keyword)
+    );
+
+    matches.forEach(store => {
+
+        const item = document.createElement("div");
+
+        item.textContent = store;
+
+        item.className = "suggestion-item";
+
+        item.onclick = () => {
+
+            storeInput.value = store;
+
+            storeSuggestionsBox.innerHTML = "";
+
+        };
+
+        storeSuggestionsBox.appendChild(item);
+
+    });
+
+});
+storeInput.addEventListener("focus", () => {
+
+    const keyword = storeInput.value.trim();
+
+    if (!keyword) return;
+
+    storeSuggestionsBox.innerHTML = "";
+
+    const matches = stores.filter(store =>
+        store.startsWith(keyword)
+    );
+
+    matches.forEach(store => {
+
+        const item = document.createElement("div");
+
+        item.textContent = store;
+
+        item.className = "suggestion-item";
+
+        item.onclick = () => {
+
+            storeInput.value = store;
+
+            storeSuggestionsBox.innerHTML = "";
+
+        };
+
+        storeSuggestionsBox.appendChild(item);
+
+    });
+
+});
+productInput.addEventListener("keydown", (event) => {
+
+    if (event.key === "Enter") {
+
+        searchProduct();
+
+    }
+
+});
+document.addEventListener("click", (event) => {
+
+    if (
+        event.target !== productInput &&
+        !suggestionsBox.contains(event.target)
+    ) {        suggestionsBox.innerHTML = "";    }
+    if (
+        event.target !== newProductInput &&
+        !newSuggestionsBox.contains(event.target)
+    ) {
+        newSuggestionsBox.innerHTML = "";
+    }
+        if (
+        event.target !== storeInput &&
+        !storeSuggestionsBox.contains(event.target)
+    ) {
+        storeSuggestionsBox.innerHTML = "";
+    }
+});
+productInput.addEventListener("focus", () => {
+
+    const keyword = productInput.value.trim();
+
+    if (!keyword) return;
+
+    suggestionsBox.innerHTML = "";
+
+    const matches = Object.keys(products).filter(name =>
+        name.includes(keyword)
+    );
+
+    matches.forEach(name => {
+
+        const item = document.createElement("div");
+
+        item.textContent = name;
+
+        item.className = "suggestion-item";
+
+        item.onclick = () => {
+            productInput.value = name;
+            suggestionsBox.innerHTML = "";
+            searchProduct();
+        };
+
+        suggestionsBox.appendChild(item);
+
+    });
+
+});
+newProductInput.addEventListener("input", () => {
+
+    const keyword =
+        newProductInput.value.trim();
+
+    newSuggestionsBox.innerHTML = "";
+
+    if (!keyword) return;
+
+    const matches =
+        Object.keys(products).filter(name =>
+            name.includes(keyword)
+        );
+
+    matches.forEach(name => {
+
+        const item =
+            document.createElement("div");
+
+        item.textContent = name;
+
+        item.className =
+            "suggestion-item";
+
+        item.onclick = () => {
+
+            newProductInput.value = name;
+
+            newSuggestionsBox.innerHTML = "";
+
+        };
+
+        newSuggestionsBox.appendChild(item);
+
+    });
+
+});
+newProductInput.addEventListener("focus", () => {
+
+    const keyword =
+        newProductInput.value.trim();
+
+    if (!keyword) return;
+
+    newSuggestionsBox.innerHTML = "";
+
+    const matches =
+        Object.keys(products).filter(name =>
+            name.includes(keyword)
+        );
+
+    matches.forEach(name => {
+
+        const item =
+            document.createElement("div");
+
+        item.textContent = name;
+
+        item.className =
+            "suggestion-item";
+
+        item.onclick = () => {
+
+            newProductInput.value = name;
+
+            newSuggestionsBox.innerHTML = "";
+
+        };
+
+        newSuggestionsBox.appendChild(item);
+
+    });
+
+});
