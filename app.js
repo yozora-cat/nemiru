@@ -579,3 +579,30 @@ newProductInput.addEventListener("focus", () => {
     });
 
 });
+function startScanner() {
+
+```
+const scanner = new Html5Qrcode("scanner");
+
+scanner.start(
+    { facingMode: "environment" },
+    {
+        fps: 10,
+        qrbox: 250
+    },
+    (decodedText) => {
+
+        console.log("バーコード:", decodedText);
+
+        document.getElementById("newProduct").value =
+            decodedText;
+
+        scanner.stop();
+
+        document.getElementById("scanner").innerHTML = "";
+
+    }
+);
+```
+
+}

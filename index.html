@@ -137,6 +137,21 @@ button{
 .suggestion-item:hover {
     background: #f0f0f0;
 }
+.product-row{
+    display:flex;
+    gap:10px;
+}
+
+.product-row input{
+    flex:3;
+    width:auto;
+}
+
+.barcode-btn{
+    flex:1 !important;
+    width:auto !important;
+    margin-top:0;
+}
 </style>
 </head>
 
@@ -168,33 +183,53 @@ button{
 </div>
 <h2>みんなの価格投稿</h2>
 <div id="price-list"></div>
-
 <div class="card">
     <h2>価格投稿</h2>
 
-    <input id="newProduct"
-           type="text"
-           placeholder="商品名">
-<div id="newSuggestions" class="suggestions"></div>
-    <br><br>
+    <div class="product-row">
+
+        <input id="newProduct"
+               type="text"
+               placeholder="商品名">
+
+        <button class="barcode-btn"
+                onclick="startScanner()">
+            📷
+        </button>
+
+    </div>
+
+    <div id="newSuggestions"
+         class="suggestions"></div>
+
+    <br>
 
     <input id="newStore"
            type="text"
            placeholder="店舗名">
 
-    <br><br>
-<div id="storeSuggestions"
-     class="suggestions"></div>
+    <div id="storeSuggestions"
+         class="suggestions"></div>
+
+    <br>
+
     <input id="newPrice"
            type="number"
            placeholder="価格">
 
-    <br><br>
+    <br>
 
     <button onclick="addPrice()">
         登録
     </button>
+
+    <div id="scanner"></div>
+
 </div>
+<div id="newSuggestions"
+     class="suggestions"></div>
+
+<div id="scanner"></div>
     <div class="card">
         <h2>買い時判定</h2>
 
@@ -220,5 +255,6 @@ button{
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 </body>
 </html>
