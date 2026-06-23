@@ -159,6 +159,19 @@ button{
     z-index: 9999;
     display: none;
 }
+#scanner video{
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+}
+
+#scanner__scan_region{
+    width: 100% !important;
+    height: 100% !important;
+}
+#scanner img{
+    display:none !important;
+}
 </style>
 </head>
 
@@ -229,14 +242,7 @@ button{
     <button onclick="addPrice()">
         登録
     </button>
-
-    <div id="scanner"></div>
-
 </div>
-<div id="newSuggestions"
-     class="suggestions"></div>
-
-<div id="scanner"></div>
     <div class="card">
         <h2>買い時判定</h2>
 
@@ -258,6 +264,8 @@ button{
         <div class="rank">4位 マックスバリュ　348円</div>
 
     </div>
+
+    <div id="scanner"></div>
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

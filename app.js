@@ -604,7 +604,6 @@ scanner.start(
     { facingMode: "environment" },
     {
         fps: 10,
-        qrbox: 250
     },
     (decodedText) => {
 
