@@ -153,24 +153,20 @@ button{
     margin-top:0;
 }
 #scanner{
-    position: fixed;
-    inset: 0;
-    background: black;
-    z-index: 9999;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: black !important;
+    z-index: 99999 !important;
     display: none;
 }
-#scanner video{
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover;
-}
 
-#scanner__scan_region{
-    width: 100% !important;
-    height: 100% !important;
-}
-#scanner img{
-    display:none !important;
+#scanner video{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
 }
 </style>
 </head>
@@ -265,11 +261,10 @@ button{
 
     </div>
 
-    <div id="scanner"></div>
-
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
+    <div id="scanner"></div>
 </body>
 </html>
