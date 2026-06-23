@@ -598,6 +598,7 @@ newProductInput.addEventListener("focus", () => {
 
 });
 function startScanner() {
+document.getElementById("scanner").style.display = "block";
 const scanner = new Html5Qrcode("scanner");
 scanner.start(
     { facingMode: "environment" },
@@ -615,7 +616,7 @@ scanner.start(
         scanner.stop();
 
         document.getElementById("scanner").innerHTML = "";
-
+document.getElementById("scanner").style.display = "none";
     }
 );
 }
