@@ -250,6 +250,24 @@ async function addPrice() {
     console.log("商品:", product);
     console.log("店舗:", store);
     console.log("価格:", price);
+    if (!product.trim()) {
+    alert("商品名を入力してください");
+    return;
+}
+
+if (!store.trim()) {
+    alert("店舗名を入力してください");
+    return;
+}
+
+if (!price || Number(price) <= 0) {
+    alert("価格を入力してください");
+    return;
+}
+if (Number(price) >= 10000) {
+    alert("価格が異常です");
+    return;
+}
     const { data, error } = await db
     .from("prices")
     .insert([
@@ -580,10 +598,7 @@ newProductInput.addEventListener("focus", () => {
 
 });
 function startScanner() {
-
-```
 const scanner = new Html5Qrcode("scanner");
-
 scanner.start(
     { facingMode: "environment" },
     {
@@ -603,6 +618,5 @@ scanner.start(
 
     }
 );
-```
-
 }
+
