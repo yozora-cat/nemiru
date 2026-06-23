@@ -598,8 +598,14 @@ newProductInput.addEventListener("focus", () => {
 
 });
 function startScanner() {
-document.getElementById("scanner").style.display = "block";
-const scanner = new Html5Qrcode("scanner");
+    const scannerDiv =
+        document.getElementById("scanner");
+
+    scannerDiv.innerHTML = "";
+    scannerDiv.style.display = "block";
+
+    const scanner =
+        new Html5Qrcode("scanner");
 scanner.start(
     { facingMode: "environment" },
     {
