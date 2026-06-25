@@ -626,6 +626,4 @@ document.getElementById("closeScanner").onclick = () => {
 
 document.body.style.overflow = "";}
 );
-```
-
 }
