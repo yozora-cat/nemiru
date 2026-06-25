@@ -168,6 +168,19 @@ button{
     height:100% !important;
     object-fit:cover !important;
 }
+#closeScanner{
+    position:absolute;
+    top:20px;
+    right:20px;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:white;
+    color:black;
+    font-size:24px;
+    font-weight:bold;
+    z-index:100000;
+}
 </style>
 </head>
 
@@ -265,6 +278,8 @@ button{
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
-    <div id="scanner"></div>
+    <div id="scanner">
+        <button id="closeScanner">✕</button>
+    </div>
 </body>
 </html>

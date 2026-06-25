@@ -580,7 +580,6 @@ newProductInput.addEventListener("focus", () => {
 
 });
 function startScanner() {
-<<<<<<< HEAD
     const scannerDiv =
         document.getElementById("scanner");
 
@@ -589,12 +588,16 @@ function startScanner() {
     document.body.style.overflow = "hidden";
     const scanner =
         new Html5Qrcode("scanner");
-=======
+        document.getElementById("closeScanner").onclick =
+    async () => {
 
-```
-const scanner = new Html5Qrcode("scanner");
+        await scanner.stop();
 
->>>>>>> parent of 12e0dba (バーコード読取実装)
+        scannerDiv.innerHTML =
+            '<button id="closeScanner">✕</button>';
+
+        scannerDiv.style.display = "none";
+    };
 scanner.start(
     { facingMode: "environment" },
     {
