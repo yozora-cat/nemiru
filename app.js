@@ -622,10 +622,7 @@ scanner.start(
 scannerDiv.innerHTML = "";
 scannerDiv.style.display = "none";
 
-document.body.style.overflow = "";
-        document.getElementById("scanner").innerHTML = "";
-document.getElementById("scanner").style.display = "none";
-    }
+document.body.style.overflow = "";}
 );
 }
 
