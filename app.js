@@ -613,6 +613,7 @@ scanner.start(
         qrbox: 250
     },
     (decodedText) => {
+        alert("読取成功: " + decodedText);
 
         console.log("バーコード:", decodedText);
 
