@@ -169,7 +169,8 @@ button{
     object-fit:cover !important;
 }
 #closeScanner{
-    position:absolute;
+    display:none;
+    position:fixed;
     top:20px;
     right:20px;
     width:50px;
@@ -178,8 +179,7 @@ button{
     background:white;
     color:black;
     font-size:24px;
-    font-weight:bold;
-    z-index:100000;
+    z-index:100001;
 }
 </style>
 </head>
@@ -279,7 +279,7 @@ button{
 <script src="app.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
     <div id="scanner">
-        <button id="closeScanner">✕</button>
     </div>
+            <button id="closeScanner">✕</button>
 </body>
 </html>

@@ -585,6 +585,7 @@ function startScanner() {
 
     scannerDiv.innerHTML = "";
     scannerDiv.style.display = "block";
+    document.getElementById("closeScanner").style.display = "block";
     document.body.style.overflow = "hidden";
     const scanner =
         new Html5Qrcode("scanner");
@@ -597,6 +598,7 @@ function startScanner() {
             '<button id="closeScanner">✕</button>';
 
         scannerDiv.style.display = "none";
+        document.getElementById("closeScanner").style.display = "none";
     };
 scanner.start(
     { facingMode: "environment" },
@@ -615,6 +617,12 @@ scanner.start(
         scanner.stop();
 scannerDiv.innerHTML = "";
 scannerDiv.style.display = "none";
+document.getElementById("closeScanner").onclick = () => {
+
+    document.getElementById("scanner").style.display = "none";
+    document.getElementById("closeScanner").style.display = "none";
+
+};
 
 document.body.style.overflow = "";}
 );
