@@ -250,24 +250,6 @@ async function addPrice() {
     console.log("商品:", product);
     console.log("店舗:", store);
     console.log("価格:", price);
-    if (!product.trim()) {
-    alert("商品名を入力してください");
-    return;
-}
-
-if (!store.trim()) {
-    alert("店舗名を入力してください");
-    return;
-}
-
-if (!price || Number(price) <= 0) {
-    alert("価格を入力してください");
-    return;
-}
-if (Number(price) >= 10000) {
-    alert("価格が異常です");
-    return;
-}
     const { data, error } = await db
     .from("prices")
     .insert([
@@ -598,6 +580,7 @@ newProductInput.addEventListener("focus", () => {
 
 });
 function startScanner() {
+<<<<<<< HEAD
     const scannerDiv =
         document.getElementById("scanner");
 
@@ -606,6 +589,12 @@ function startScanner() {
     document.body.style.overflow = "hidden";
     const scanner =
         new Html5Qrcode("scanner");
+=======
+
+```
+const scanner = new Html5Qrcode("scanner");
+
+>>>>>>> parent of 12e0dba (バーコード読取実装)
 scanner.start(
     { facingMode: "environment" },
     {
@@ -626,5 +615,6 @@ scannerDiv.style.display = "none";
 
 document.body.style.overflow = "";}
 );
-}
+```
 
+}
