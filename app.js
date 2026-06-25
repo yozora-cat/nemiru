@@ -603,7 +603,7 @@ function startScanner() {
 
     scannerDiv.innerHTML = "";
     scannerDiv.style.display = "block";
-
+    document.body.style.overflow = "hidden";
     const scanner =
         new Html5Qrcode("scanner");
 scanner.start(
@@ -619,7 +619,10 @@ scanner.start(
             decodedText;
 
         scanner.stop();
+scannerDiv.innerHTML = "";
+scannerDiv.style.display = "none";
 
+document.body.style.overflow = "";
         document.getElementById("scanner").innerHTML = "";
 document.getElementById("scanner").style.display = "none";
     }
