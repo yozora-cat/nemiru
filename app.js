@@ -2,6 +2,7 @@ const supabaseUrl = 'https://kbrrfilzdqshlimsgkdy.supabase.co'
 const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = {};
+let scanner = null;
 fetch("products.json")
   .then(response => response.json())
   .then(data => {
@@ -587,19 +588,21 @@ function startScanner() {
     scannerDiv.style.display = "block";
     document.getElementById("closeScanner").style.display = "block";
     document.body.style.overflow = "hidden";
-    const scanner =
+    scanner =
         new Html5Qrcode("scanner");
-        document.getElementById("closeScanner").onclick =
-    async () => {
+     document.getElementById("closeScanner").onclick =
+     async () => {
 
+    if (scanner) {
         await scanner.stop();
+        scanner.clear();
+    }
 
-        scannerDiv.innerHTML =
-            '<button id="closeScanner">✕</button>';
+    scannerDiv.style.display = "none";
+    document.getElementById("closeScanner").style.display = "none";
 
-        scannerDiv.style.display = "none";
-        document.getElementById("closeScanner").style.display = "none";
-    };
+    document.body.style.overflow = "";
+};
 scanner.start(
     { facingMode: "environment" },
     {
@@ -617,13 +620,8 @@ scanner.start(
         scanner.stop();
 scannerDiv.innerHTML = "";
 scannerDiv.style.display = "none";
-document.getElementById("closeScanner").onclick = () => {
-
-    document.getElementById("scanner").style.display = "none";
     document.getElementById("closeScanner").style.display = "none";
 
 };
 
 document.body.style.overflow = "";}
-);
-}
