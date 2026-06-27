@@ -585,7 +585,7 @@ function startScanner() {
     const scannerDiv =
         document.getElementById("scanner");
 
-    scannerDiv.innerHTML = "";
+    //scannerDiv.innerHTML = "";
     scannerDiv.style.display = "block";
 
     document.getElementById("closeScanner").style.display = "block";
@@ -626,7 +626,6 @@ function startScanner() {
 
             scanner.stop();
 
-            scannerDiv.innerHTML = "";
             scannerDiv.style.display = "none";
 
             document.getElementById("closeScanner").style.display = "none";
