@@ -581,47 +581,57 @@ newProductInput.addEventListener("focus", () => {
 
 });
 function startScanner() {
+
     const scannerDiv =
         document.getElementById("scanner");
 
     scannerDiv.innerHTML = "";
     scannerDiv.style.display = "block";
+
     document.getElementById("closeScanner").style.display = "block";
+
     document.body.style.overflow = "hidden";
-    scanner =
-        new Html5Qrcode("scanner");
-     document.getElementById("closeScanner").onclick =
-     async () => {
 
-    if (scanner) {
-        await scanner.stop();
-        scanner.clear();
-    }
+    scanner = new Html5Qrcode("scanner");
 
-    scannerDiv.style.display = "none";
-    document.getElementById("closeScanner").style.display = "none";
+    document.getElementById("closeScanner").onclick =
+    async () => {
 
-    document.body.style.overflow = "";
-};
-scanner.start(
-    { facingMode: "environment" },
-    {
-        fps: 10,
-        qrbox: 250
-    },
-    (decodedText) => {
-        alert("読取成功: " + decodedText);
+        if (scanner) {
+            await scanner.stop();
+            scanner.clear();
+        }
 
-        console.log("バーコード:", decodedText);
+        scannerDiv.style.display = "none";
 
-        document.getElementById("newProduct").value =
-            decodedText;
+        document.getElementById("closeScanner").style.display = "none";
 
-        scanner.stop();
-scannerDiv.innerHTML = "";
-scannerDiv.style.display = "none";
-    document.getElementById("closeScanner").style.display = "none";
+        document.body.style.overflow = "";
+    };
 
-};
+    scanner.start(
+        { facingMode: "environment" },
+        {
+            fps: 10,
+            qrbox: 250
+        },
+        (decodedText) => {
 
-document.body.style.overflow = "";}
+            alert("読取成功: " + decodedText);
+
+            console.log("バーコード:", decodedText);
+
+            document.getElementById("newProduct").value =
+                decodedText;
+
+            scanner.stop();
+
+            scannerDiv.innerHTML = "";
+            scannerDiv.style.display = "none";
+
+            document.getElementById("closeScanner").style.display = "none";
+
+            document.body.style.overflow = "";
+        }
+    );
+}
