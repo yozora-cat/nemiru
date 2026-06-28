@@ -609,21 +609,35 @@ function startScanner() {
         document.body.style.overflow = "";
     };
 
-    scanner.start(
-        { facingMode: "environment" },
-        {
-            fps: 10,
-            qrbox: 250
-        },
-        (decodedText) => {
+scanner.start(
+    { facingMode: "environment" },
+    {
+        fps: 10,
+        qrbox: 250
+    },
+    async (decodedText) => {
 
-            alert("読取成功: " + decodedText);
+        alert("読取成功: " + decodedText);
 
-            console.log("バーコード:", decodedText);
+        console.log("バーコード:", decodedText);
+
+        const { data, error } = await db
+            .from("product_master")
+            .select("name")
+            .eq("barcode", decodedText)
+            .single();
+
+        if (error || !data) {
+
+            alert("このバーコードの商品は見つかりませんでした");
+
+            document.getElementById("newProduct").value = "";
+
+        } else {
 
             document.getElementById("newProduct").value =
-                decodedText;
-
+                data.name;
+        }
             scanner.stop();
 
             scannerDiv.style.display = "none";
