@@ -3,6 +3,7 @@ const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = {};
 let scanner = null;
+let lastBarcode = "";
 fetch("products.json")
   .then(response => response.json())
   .then(data => {
@@ -616,7 +617,16 @@ scanner.start(
         qrbox: 250
     },
     async (decodedText) => {
-
+    　　if (decodedText.length !== 13) {
+       　 console.log("13桁ではないため無視:", decodedText);
+        　return;
+   　　 }
+  　　　 if (decodedText !== lastBarcode) {
+  　　　　  lastBarcode = decodedText;
+   　　　　 console.log("1回目検出:", decodedText);
+   　　　　　 return;
+　　　　　}
+　　　　　console.log("2回連続一致:", decodedText);
         alert("読取成功: " + decodedText);
 
         console.log("バーコード:", decodedText);
