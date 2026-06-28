@@ -636,9 +636,11 @@ scanner.start(
             .select("name")
             .eq("barcode", decodedText)
             .single();
-         console.log("decodedText =", decodedText);
-         console.log("data =", data);
-         console.log("error =", error);
+alert(
+    "decodedText=" + decodedText +
+    "\nerror=" + JSON.stringify(error) +
+    "\ndata=" + JSON.stringify(data)
+);
         if (error || !data) {
 
    　　　 alert(
