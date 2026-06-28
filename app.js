@@ -621,12 +621,12 @@ scanner.start(
        　 console.log("13桁ではないため無視:", decodedText);
         　return;
    　　 }
-  　　　 if (decodedText !== lastBarcode) {
-  　　　　  lastBarcode = decodedText;
-   　　　　 console.log("1回目検出:", decodedText);
-   　　　　　 return;
-　　　　　}
-　　　　　console.log("2回連続一致:", decodedText);
+  　　　// if (decodedText !== lastBarcode) {
+  　　　//　  lastBarcode = decodedText;
+   　　//　　 console.log("1回目検出:", decodedText);
+   　　　//　　 return;
+　　　　//　}
+　　　　//　console.log("2回連続一致:", decodedText);
         alert("読取成功: " + decodedText);
 
         console.log("バーコード:", decodedText);
@@ -639,11 +639,15 @@ scanner.start(
 
         if (error || !data) {
 
-            alert("このバーコードの商品は見つかりませんでした");
+   　　　 alert(
+        "商品なし\nバーコード: " + decodedText
+    　　　);
 
-            document.getElementById("newProduct").value = "";
+   　　　 document.getElementById("newProduct").value =
+       　　 decodedText;
 
-        } else {
+　　　　　}
+else {
 
             document.getElementById("newProduct").value =
                 data.name;
