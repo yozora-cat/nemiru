@@ -3,8 +3,7 @@ const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = {};
 let scanner = null;
-let codeReader =
-    new ZXing.BrowserMultiFormatReader();
+let codeReader = null;
 fetch("products.json")
   .then(response => response.json())
   .then(data => {
@@ -586,10 +585,13 @@ function startScanner() {
 
     alert("startScanner動作");
 
+    if (!codeReader) {
+        codeReader =
+            new ZXing.BrowserMultiFormatReader();
+    }
+
     const fileInput =
         document.getElementById("barcodeFile");
-
-    alert(fileInput);
 
     fileInput.value = "";
 
