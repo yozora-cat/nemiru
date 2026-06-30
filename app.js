@@ -5,6 +5,8 @@ let products = {};
 let scanner = null;
 let codeReader = null;
 let lastBarcode = "";
+let codeReader =
+    new ZXing.BrowserMultiFormatReader();
 fetch("products.json")
   .then(response => response.json())
   .then(data => {
@@ -584,63 +586,50 @@ newProductInput.addEventListener("focus", () => {
 });
 function startScanner() {
 
-    const scannerDiv =
-        document.getElementById("scanner");
+    const fileInput =
+        document.getElementById("barcodeFile");
 
-    scannerDiv.style.display = "block";
+    fileInput.value = "";
 
-    document.getElementById("closeScanner").style.display = "block";
+    fileInput.click();
 
-    document.body.style.overflow = "hidden";
+}
+document.getElementById("barcodeFile")
+.addEventListener(
+    "change",
+    async (event) => {
 
-    codeReader =
-        new ZXing.BrowserMultiFormatReader();
+        const file =
+            event.target.files[0];
 
-    document.getElementById("closeScanner").onclick =
-    async () => {
-
-        if (codeReader) {
-            codeReader.reset();
+        if (!file) {
+            return;
         }
 
-        scannerDiv.style.display = "none";
+        try {
 
-        document.getElementById("closeScanner").style.display = "none";
-
-        document.body.style.overflow = "";
-    };
-
-    codeReader.decodeFromVideoDevice(
-        null,
-        "scanner",
-        async (result, err) => {
-
-            if (!result) {
-                return;
-            }
+            const result =
+                await codeReader.decodeFromImageUrl(
+                    URL.createObjectURL(file)
+                );
 
             const decodedText =
                 result.getText();
 
-            console.log("バーコード:", decodedText);
+            alert(
+                "読取成功: " +
+                decodedText
+            );
 
-            if (decodedText.length !== 13) {
-                return;
-            }
-
-            alert("読取成功: " + decodedText);
-
-            const { data, error } = await db
+            const { data, error } =
+                await db
                 .from("product_master")
                 .select("*")
-                .eq("barcode", decodedText)
+                .eq(
+                    "barcode",
+                    decodedText
+                )
                 .single();
-
-            alert(
-                "decodedText=" + decodedText +
-                "\nerror=" + JSON.stringify(error) +
-                "\ndata=" + JSON.stringify(data)
-            );
 
             if (error || !data) {
 
@@ -649,26 +638,34 @@ function startScanner() {
                     decodedText
                 );
 
-                document.getElementById(
+                document
+                .getElementById(
                     "newProduct"
-                ).value = decodedText;
+                )
+                .value =
+                decodedText;
 
             } else {
 
-                document.getElementById(
+                document
+                .getElementById(
                     "newProduct"
-                ).value = data.name;
+                )
+                .value =
+                data.name;
             }
 
-            codeReader.reset();
+        } catch (err) {
 
-            scannerDiv.style.display = "none";
+            console.error(err);
 
-            document.getElementById(
-                "closeScanner"
-            ).style.display = "none";
+            alert(
+                "バーコードを認識できませんでした"
+            );
 
-            document.body.style.overflow = "";
         }
-    );
-}
+
+        event.target.value = "";
+
+    }
+);
