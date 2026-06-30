@@ -3,6 +3,7 @@ const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = {};
 let scanner = null;
+let codeReader = null;
 let lastBarcode = "";
 fetch("products.json")
   .then(response => response.json())
@@ -586,21 +587,20 @@ function startScanner() {
     const scannerDiv =
         document.getElementById("scanner");
 
-    //scannerDiv.innerHTML = "";
     scannerDiv.style.display = "block";
 
     document.getElementById("closeScanner").style.display = "block";
 
     document.body.style.overflow = "hidden";
 
-    scanner = new Html5Qrcode("scanner");
+    codeReader =
+        new ZXing.BrowserMultiFormatReader();
 
     document.getElementById("closeScanner").onclick =
     async () => {
 
-        if (scanner) {
-            await scanner.stop();
-            scanner.clear();
+        if (codeReader) {
+            codeReader.reset();
         }
 
         scannerDiv.style.display = "none";
@@ -610,57 +610,63 @@ function startScanner() {
         document.body.style.overflow = "";
     };
 
-scanner.start(
-    { facingMode: "environment" },
-    {
-        fps: 10,
-        qrbox: 250
-    },
-    async (decodedText) => {
-    　　if (decodedText.length !== 13) {
-       　 console.log("13桁ではないため無視:", decodedText);
-        　return;
-   　　 }
-  　　　// if (decodedText !== lastBarcode) {
-  　　　//　  lastBarcode = decodedText;
-   　　//　　 console.log("1回目検出:", decodedText);
-   　　　//　　 return;
-　　　　//　}
-　　　　//　console.log("2回連続一致:", decodedText);
-        alert("読取成功: " + decodedText);
+    codeReader.decodeFromVideoDevice(
+        null,
+        "scanner",
+        async (result, err) => {
 
-        console.log("バーコード:", decodedText);
+            if (!result) {
+                return;
+            }
 
-        const { data, error } = await db
-            .from("product_master")
-            .select("*")
-            .eq("barcode", decodedText)
-            .single();
-alert(
-    "decodedText=" + decodedText +
-    "\nerror=" + JSON.stringify(error) +
-    "\ndata=" + JSON.stringify(data)
-);
-        if (error || !data) {
+            const decodedText =
+                result.getText();
 
-   　　　 alert(
-        "商品なし\nバーコード: " + decodedText
-    　　　);
+            console.log("バーコード:", decodedText);
 
-   　　　 document.getElementById("newProduct").value =
-       　　 decodedText;
+            if (decodedText.length !== 13) {
+                return;
+            }
 
-　　　　　}
-else {
+            alert("読取成功: " + decodedText);
 
-            document.getElementById("newProduct").value =
-                data.name;
-        }
-            scanner.stop();
+            const { data, error } = await db
+                .from("product_master")
+                .select("*")
+                .eq("barcode", decodedText)
+                .single();
+
+            alert(
+                "decodedText=" + decodedText +
+                "\nerror=" + JSON.stringify(error) +
+                "\ndata=" + JSON.stringify(data)
+            );
+
+            if (error || !data) {
+
+                alert(
+                    "商品なし\nバーコード: " +
+                    decodedText
+                );
+
+                document.getElementById(
+                    "newProduct"
+                ).value = decodedText;
+
+            } else {
+
+                document.getElementById(
+                    "newProduct"
+                ).value = data.name;
+            }
+
+            codeReader.reset();
 
             scannerDiv.style.display = "none";
 
-            document.getElementById("closeScanner").style.display = "none";
+            document.getElementById(
+                "closeScanner"
+            ).style.display = "none";
 
             document.body.style.overflow = "";
         }
