@@ -3,8 +3,6 @@ const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = {};
 let scanner = null;
-let codeReader = null;
-let lastBarcode = "";
 let codeReader =
     new ZXing.BrowserMultiFormatReader();
 fetch("products.json")
