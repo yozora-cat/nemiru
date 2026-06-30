@@ -586,6 +586,8 @@ newProductInput.addEventListener("focus", () => {
 });
 function startScanner() {
 
+    alert("startScanner動作");
+
     const fileInput =
         document.getElementById("barcodeFile");
 
