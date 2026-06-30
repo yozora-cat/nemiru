@@ -591,6 +591,8 @@ function startScanner() {
     const fileInput =
         document.getElementById("barcodeFile");
 
+    alert(fileInput);
+
     fileInput.value = "";
 
     fileInput.click();
