@@ -633,7 +633,7 @@ scanner.start(
 
         const { data, error } = await db
             .from("product_master")
-            .select("name")
+            .select("*")
             .eq("barcode", decodedText)
             .single();
 alert(
