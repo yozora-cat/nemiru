@@ -26,8 +26,11 @@ async function searchProduct() {
 
     console.log("検索:", name);
 
-    const product = products[name];
-
+    const { data } = await db
+    .from("product_master")
+    .select("*")
+    .eq("name", name)
+    .single();
     if(!product){
         alert("商品が見つかりません");
         return;
