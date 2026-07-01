@@ -3,7 +3,6 @@ const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = {};
 let scanner = null;
-let codeReader = null;
 fetch("products.json")
   .then(response => response.json())
   .then(data => {
@@ -581,78 +580,78 @@ newProductInput.addEventListener("focus", () => {
     });
 
 });
-document.getElementById("barcodeFile")
-.addEventListener(
-    "change",
-    async (event) => {
+//document.getElementById("barcodeFile")
+//.addEventListener(
+//    "change",
+//    async (event) => {
+//
+//       const file =
+//            event.target.files[0];
+//
+//        if (!file) {
+//            return;
+//        }
 
-        const file =
-            event.target.files[0];
+//        try {
 
-        if (!file) {
-            return;
-        }
+//            const result =
+//                await codeReader.decodeFromImageUrl(
+//                    URL.createObjectURL(file)
+//                );
+//
+//            const decodedText =
+//                result.getText();
 
-        try {
+//            alert(
+//                "読取成功: " +
+//                decodedText
+//            );
 
-            const result =
-                await codeReader.decodeFromImageUrl(
-                    URL.createObjectURL(file)
-                );
+//            const { data, error } =
+  //              await db
+    //            .from("product_master")
+      //          .select("*")
+        //        .eq(
+          //          "barcode",
+            //        decodedText
+              //  )
+//                .single();
 
-            const decodedText =
-                result.getText();
+//            if (error || !data) {
 
-            alert(
-                "読取成功: " +
-                decodedText
-            );
+//                alert(
+  //                  "商品なし\nバーコード: " +
+    //                decodedText
+      //          );
 
-            const { data, error } =
-                await db
-                .from("product_master")
-                .select("*")
-                .eq(
-                    "barcode",
-                    decodedText
-                )
-                .single();
+//                document
+  //              .getElementById(
+    //                "newProduct"
+      //          )
+        //        .value =
+          //      decodedText;
 
-            if (error || !data) {
+//            } else {
 
-                alert(
-                    "商品なし\nバーコード: " +
-                    decodedText
-                );
+//                document
+  //              .getElementById(
+    //                "newProduct"
+      //          )
+//                .value =
+ //               data.name;
+  //          }
 
-                document
-                .getElementById(
-                    "newProduct"
-                )
-                .value =
-                decodedText;
+//        } catch (err) {
 
-            } else {
+//            console.error(err);
 
-                document
-                .getElementById(
-                    "newProduct"
-                )
-                .value =
-                data.name;
-            }
+//            alert(
+//                "バーコードを認識できませんでした"
+//            );
 
-        } catch (err) {
+//        }
 
-            console.error(err);
+//        event.target.value = "";
 
-            alert(
-                "バーコードを認識できませんでした"
-            );
-
-        }
-
-        event.target.value = "";
-
-    }
-);
+//    }
+//);

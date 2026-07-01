@@ -152,6 +152,11 @@ button{
     width:auto !important;
     margin-top:0;
 }
+.barcode-btn:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
+    opacity:0.7;
+}
 #scanner{
     position: fixed !important;
     top: 0 !important;
@@ -220,11 +225,12 @@ button{
         <input id="newProduct"
                type="text"
                placeholder="商品名">        
-        <label for="barcodeFile"
-               class="barcode-btn">
-           📷
-        </label>
-
+        <button
+            class="barcode-btn"
+            disabled
+            title="近日対応予定">
+             📷
+        </button>
      <input
      type="file"
      id="barcodeFile"
