@@ -581,18 +581,6 @@ newProductInput.addEventListener("focus", () => {
     });
 
 });
-function startScanner() {
-
-    alert("startScanner動作");
-
-    const fileInput =
-        document.getElementById("barcodeFile");
-
-    alert(fileInput);
-
-    fileInput.click();
-
-}
 document.getElementById("barcodeFile")
 .addEventListener(
     "change",

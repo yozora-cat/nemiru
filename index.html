@@ -219,17 +219,18 @@ button{
 
         <input id="newProduct"
                type="text"
-               placeholder="商品名">
+               placeholder="商品名">        
+        <label for="barcodeFile"
+               class="barcode-btn">
+           📷
+        </label>
 
-        <button class="barcode-btn"
-                onclick="startScanner()">
-            📷
-        </button>
-        <input
-         type="file"
-         id="barcodeFile"
-         accept="image/*"
-         capture="environment">
+     <input
+     type="file"
+     id="barcodeFile"
+     accept="image/*"
+     capture="environment"
+     style="display:none">
     </div>
 
     <div id="newSuggestions"
