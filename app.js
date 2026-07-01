@@ -585,15 +585,10 @@ function startScanner() {
 
     alert("startScanner動作");
 
-    if (!codeReader) {
-        codeReader =
-            new ZXing.BrowserMultiFormatReader();
-    }
-
     const fileInput =
         document.getElementById("barcodeFile");
 
-    fileInput.value = "";
+    alert(fileInput);
 
     fileInput.click();
 
