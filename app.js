@@ -26,15 +26,23 @@ async function searchProduct() {
 
     console.log("検索:", name);
 
-    const { data } = await db
+    const { data, error } = await db
     .from("product_master")
     .select("*")
-    .eq("name", name)
-    .single();
-    if(!data){
-      alert("商品が見つかりません");
-      return;
+    .eq("name", name);
+
+    if (error) {
+    alert("検索エラー");
+    console.log(error);
+    return;
     }
+
+    if (data.length === 0) {
+    alert("商品が見つかりません");
+    return;
+    }
+
+    const product = data[0];
 
     const priceData = await loadPrices(name);
     const stats = calculatePriceStats(priceData);
@@ -98,17 +106,17 @@ async function searchProduct() {
 //<h2>店舗ランキング</h2>
 //`;
 
-product.stores.forEach((store, index) => {
-    rankingHtml += `
-    <p>${index + 1}位 ${store.name} ${store.price}円</p>
-    `;
-});
+//product.stores.forEach((store, index) => {
+//    rankingHtml += `
+//    <p>${index + 1}位 ${store.name} ${store.price}円</p>
+//    `;
+//});
 
-document.getElementById("ranking").innerHTML = rankingHtml;
-renderProductRanking(priceData);
-    }else{
-        alert("商品が見つかりません");
-    }
+//document.getElementById("ranking").innerHTML = rankingHtml;
+//renderProductRanking(priceData);
+//    }else{
+//        alert("商品が見つかりません");
+//    }
 }
 function calculatePriceStats(priceData) {
 
