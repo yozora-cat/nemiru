@@ -31,9 +31,9 @@ async function searchProduct() {
     .select("*")
     .eq("name", name)
     .single();
-    if(!product){
-        alert("商品が見つかりません");
-        return;
+    if(!data){
+      alert("商品が見つかりません");
+      return;
     }
 
     const priceData = await loadPrices(name);
@@ -41,62 +41,62 @@ async function searchProduct() {
     const lowestPriceText = stats.count > 0 ? `${stats.lowestPrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
     const averagePriceText = stats.count > 0 ? `${stats.averagePrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
 
-    let score =
-    Math.round(
-        ((stats.lowestPrice || 0) / product.currentPrice)
-        * 100
-    );
-    let judgement = "";
-    if(score >= 95){
-    judgement = "🟢 今が買い時！";
-  }
-else if(score >= 80){
-    judgement = "🟡 普通";
-}
-else{
-    judgement = "🔴 まだ高い";
-}
-    if(product){
-     document.getElementById("result").innerHTML = `
-     <h2>${name}</h2>
-     <p>現在価格：${product.currentPrice}円</p>
-     <p>底値：${product.lowestPrice}円</p>
-     <p>平均価格：${product.averagePrice}円</p>
-     <p>買い時スコア：${score}点</p>
-     <p>${judgement}</p>
-     `;
-     document.getElementById("result").innerHTML = `
-     <h2>${name}</h2>
-     <p>現在価格：${product.currentPrice}円</p>
-     <p>最安値：${lowestPriceText}</p>
-     <p>平均価格：${averagePriceText}</p>
-     <p>投稿件数：${stats.count}件</p>
-     <p>買い時スコア：${score}点</p>
-     <p>${judgement}</p>
-     `;
-     document.getElementById("result").innerHTML = `
-     <h2>${name}</h2>
-     <p>&#29694;&#22312;&#20385;&#26684;: ${product.currentPrice}&#20870;</p>
-     <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label">&#26368;&#23433;&#20516;</div>
-            <div class="stat-value">${lowestPriceText}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">&#24179;&#22343;&#20385;&#26684;</div>
-            <div class="stat-value">${averagePriceText}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">&#25237;&#31295;&#20214;&#25968;</div>
-            <div class="stat-value">${stats.count}&#20214;</div>
-        </div>
-     </div>
-     <p>&#36023;&#12356;&#26178;&#12473;&#12467;&#12450;: ${score}&#28857;</p>
-     <p>${judgement}</p>
-     `;
-     let rankingHtml = `
-<h2>店舗ランキング</h2>
-`;
+ //   let score =
+ //   Math.round(
+ //       ((stats.lowestPrice || 0) / product.currentPrice)
+ //       * 100
+ //   );
+ //   let judgement = "";
+ //   if(score >= 95){
+ //   judgement = "🟢 今が買い時！";
+ // }
+//else if(score >= 80){
+//    judgement = "🟡 普通";
+//}
+//else{
+//    judgement = "🔴 まだ高い";
+//}
+//    if(product){
+//     document.getElementById("result").innerHTML = `
+//     <h2>${name}</h2>
+//     <p>現在価格：${product.currentPrice}円</p>
+//     <p>底値：${product.lowestPrice}円</p>
+//     <p>平均価格：${product.averagePrice}円</p>
+//     <p>買い時スコア：${score}点</p>
+//     <p>${judgement}</p>
+//     `;
+//     document.getElementById("result").innerHTML = `
+//     <h2>${name}</h2>
+//     <p>現在価格：${product.currentPrice}円</p>
+//     <p>最安値：${lowestPriceText}</p>
+//     <p>平均価格：${averagePriceText}</p>
+//     <p>投稿件数：${stats.count}件</p>
+//     <p>買い時スコア：${score}点</p>
+//     <p>${judgement}</p>
+//     `;
+//     document.getElementById("result").innerHTML = `
+//     <h2>${name}</h2>
+//     <p>&#29694;&#22312;&#20385;&#26684;: ${product.currentPrice}&#20870;</p>
+//     <div class="stats-grid">
+//        <div class="stat-card">
+//            <div class="stat-label">&#26368;&#23433;&#20516;</div>
+//            <div class="stat-value">${lowestPriceText}</div>
+//        </div>
+//        <div class="stat-card">
+//            <div class="stat-label">&#24179;&#22343;&#20385;&#26684;</div>
+//            <div class="stat-value">${averagePriceText}</div>
+//        </div>
+ //       <div class="stat-card">
+//            <div class="stat-label">&#25237;&#31295;&#20214;&#25968;</div>
+//            <div class="stat-value">${stats.count}&#20214;</div>
+//        </div>
+//     </div>
+//     <p>&#36023;&#12356;&#26178;&#12473;&#12467;&#12450;: ${score}&#28857;</p>
+//     <p>${judgement}</p>
+//     `;
+//     let rankingHtml = `
+//<h2>店舗ランキング</h2>
+//`;
 
 product.stores.forEach((store, index) => {
     rankingHtml += `
