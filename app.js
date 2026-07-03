@@ -27,9 +27,13 @@ async function searchProduct() {
     console.log("検索:", name);
 
     const { data, error } = await db
-    .from("product_master")
-    .select("*")
-    .eq("name", name);
+        .from("product_master")
+        .select("*")
+        .eq("name", name);
+    console.log("全件取得:", data);
+    console.log("検索文字:", name);
+    console.log("Supabase結果:", data);
+    console.log("Supabaseエラー:", error);
 
     if (error) {
     alert("検索エラー");
