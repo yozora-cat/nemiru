@@ -1,24 +1,51 @@
 const supabaseUrl = 'https://kbrrfilzdqshlimsgkdy.supabase.co'
 const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
-let products = {};
+let products = [];
+
+async function loadProducts() {
+
+    const { data, error } = await db
+        .from("product_master")
+        .select("*")
+        .order("name");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    products = data;
+
+    console.log("商品マスター読込完了");
+}
+
+loadProducts();
+
 let scanner = null;
-fetch("products.json")
-  .then(response => response.json())
-  .then(data => {
-      products = data;
-      console.log("商品データ読み込み完了");
-  });
 let stores = [];
-fetch("stores.json")
-    .then(response => response.json())
-    .then(data => {
-        stores = data;
-        console.log("店舗データ読み込み完了");
-    });
+
+async function loadStores() {
+
+    const { data, error } = await db
+        .from("store_master")
+        .select("*")
+        .order("name");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    stores = data.map(store => store.name);
+
+    console.log("店舗データ読み込み完了");
+    console.log(stores);
+}
+
+loadStores();
 console.log("ネミル 起動");
 console.log("Supabase接続完了");
-console.log(products);
 async function searchProduct() {
 
     const name =
@@ -284,19 +311,6 @@ if(error){
 
 alert("Supabaseに保存成功！");
 await loadPrices();
-
-if (products[product]) {
-
-    products[product].stores.push({
-        name: store,
-        price: Number(price)
-    });
-
-    products[product].stores.sort(
-        (a, b) => a.price - b.price
-    );
-
-}
     alert("価格を登録しました");
 }
 async function loadPrices(productName = "") {
@@ -374,9 +388,11 @@ productInput.addEventListener("input", () => {
 
     if (!keyword) return;
 
-    const matches = Object.keys(products).filter(name =>
-        name.includes(keyword)
-    );
+    const matches = products
+        .filter(product =>
+            product.name.includes(keyword)
+        )
+        .map(product => product.name);
 
     matches.forEach(name => {
 
@@ -389,7 +405,7 @@ productInput.addEventListener("input", () => {
         item.onclick = () => {
             productInput.value = name;
             suggestionsBox.innerHTML = "";
-           searchProduct();
+            searchProduct();
         };
 
         suggestionsBox.appendChild(item);
@@ -498,9 +514,11 @@ productInput.addEventListener("focus", () => {
 
     suggestionsBox.innerHTML = "";
 
-    const matches = Object.keys(products).filter(name =>
-        name.includes(keyword)
-    );
+    const matches = products
+     .filter(product =>
+        product.name.includes(keyword)
+    )
+    .map(product => product.name);
 
     matches.forEach(name => {
 
@@ -530,10 +548,11 @@ newProductInput.addEventListener("input", () => {
 
     if (!keyword) return;
 
-    const matches =
-        Object.keys(products).filter(name =>
-            name.includes(keyword)
-        );
+    const matches = products
+     .filter(product =>
+        product.name.includes(keyword)
+     )
+     .map(product => product.name);
 
     matches.forEach(name => {
 
@@ -567,10 +586,11 @@ newProductInput.addEventListener("focus", () => {
 
     newSuggestionsBox.innerHTML = "";
 
-    const matches =
-        Object.keys(products).filter(name =>
-            name.includes(keyword)
-        );
+    const matches = products
+     .filter(product =>
+        product.name.includes(keyword)
+     )
+    .map(product => product.name);
 
     matches.forEach(name => {
 
