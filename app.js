@@ -87,93 +87,90 @@ async function searchProduct() {
     const stats = calculatePriceStats(priceData);
     const lowestPriceText = stats.count > 0 ? `${stats.lowestPrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
     const averagePriceText = stats.count > 0 ? `${stats.averagePrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
+    const currentPriceText =
+     stats.count > 0
+        ? `${stats.latestPrice}円`
+        : "価格データなし";
+let score = 0;
 
- //   let score =
- //   Math.round(
- //       ((stats.lowestPrice || 0) / product.currentPrice)
- //       * 100
- //   );
- //   let judgement = "";
- //   if(score >= 95){
- //   judgement = "🟢 今が買い時！";
- // }
-//else if(score >= 80){
-//    judgement = "🟡 普通";
-//}
-//else{
-//    judgement = "🔴 まだ高い";
-//}
-//    if(product){
-//     document.getElementById("result").innerHTML = `
-//     <h2>${name}</h2>
-//     <p>現在価格：${product.currentPrice}円</p>
-//     <p>底値：${product.lowestPrice}円</p>
-//     <p>平均価格：${product.averagePrice}円</p>
-//     <p>買い時スコア：${score}点</p>
-//     <p>${judgement}</p>
-//     `;
-//     document.getElementById("result").innerHTML = `
-//     <h2>${name}</h2>
-//     <p>現在価格：${product.currentPrice}円</p>
-//     <p>最安値：${lowestPriceText}</p>
-//     <p>平均価格：${averagePriceText}</p>
-//     <p>投稿件数：${stats.count}件</p>
-//     <p>買い時スコア：${score}点</p>
-//     <p>${judgement}</p>
-//     `;
-//     document.getElementById("result").innerHTML = `
-//     <h2>${name}</h2>
-//     <p>&#29694;&#22312;&#20385;&#26684;: ${product.currentPrice}&#20870;</p>
-//     <div class="stats-grid">
-//        <div class="stat-card">
-//            <div class="stat-label">&#26368;&#23433;&#20516;</div>
-//            <div class="stat-value">${lowestPriceText}</div>
-//        </div>
-//        <div class="stat-card">
-//            <div class="stat-label">&#24179;&#22343;&#20385;&#26684;</div>
-//            <div class="stat-value">${averagePriceText}</div>
-//        </div>
- //       <div class="stat-card">
-//            <div class="stat-label">&#25237;&#31295;&#20214;&#25968;</div>
-//            <div class="stat-value">${stats.count}&#20214;</div>
-//        </div>
-//     </div>
-//     <p>&#36023;&#12356;&#26178;&#12473;&#12467;&#12450;: ${score}&#28857;</p>
-//     <p>${judgement}</p>
-//     `;
-//     let rankingHtml = `
-//<h2>店舗ランキング</h2>
-//`;
+if (stats.count > 0) {
+    score = Math.round(
+        (stats.lowestPrice / stats.latestPrice) * 100
+    );
+}
 
-//product.stores.forEach((store, index) => {
-//    rankingHtml += `
-//    <p>${index + 1}位 ${store.name} ${store.price}円</p>
-//    `;
-//});
+let judgement = "";
 
-//document.getElementById("ranking").innerHTML = rankingHtml;
-//renderProductRanking(priceData);
-//    }else{
-//        alert("商品が見つかりません");
-//    }
+if (score >= 95) {
+    judgement = "🟢 今が買い時！";
+}
+else if (score >= 80) {
+    judgement = "🟡 普通";
+}
+else {
+    judgement = "🔴 まだ高い";
+}
+
+document.getElementById("result").innerHTML = `
+<h2>${product.name}</h2>
+
+<p><strong>現在価格：</strong>${currentPriceText}</p>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-label">最安値</div>
+        <div class="stat-value">${lowestPriceText}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">平均価格</div>
+        <div class="stat-value">${averagePriceText}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">投稿件数</div>
+        <div class="stat-value">${stats.count}件</div>
+    </div>
+
+</div>
+
+<p><strong>買い時スコア：</strong>${score}点</p>
+
+<p>${judgement}</p>
+`;
+
+renderProductRanking(priceData);
 }
 function calculatePriceStats(priceData) {
 
-    const prices = (priceData || [])
-        .map(item => Number(item.price))
-        .filter(price => !Number.isNaN(price));
-
-    if (prices.length === 0) {
+    if (!priceData || priceData.length === 0) {
         return {
+            latestPrice: 0,
             lowestPrice: 0,
             averagePrice: 0,
             count: 0
         };
     }
 
-    const total = prices.reduce((sum, price) => sum + price, 0);
+    const sortedData = [...priceData].sort(
+        (a, b) =>
+            new Date(b.created_at) - new Date(a.created_at)
+    );
+
+    const latestPrice = Number(sortedData[0].price);
+
+    const prices = sortedData
+        .map(item => Number(item.price))
+        .filter(price => !Number.isNaN(price));
+
+    const total = prices.reduce(
+        (sum, price) => sum + price,
+        0
+    );
 
     return {
+        latestPrice,
         lowestPrice: Math.min(...prices),
         averagePrice: Math.round(total / prices.length),
         count: prices.length
