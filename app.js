@@ -21,7 +21,15 @@ async function loadProducts() {
 }
 
 loadProducts();
-
+function normalizeText(str) {
+    return str
+        .normalize("NFKC") // 半角→全角
+        .replace(/[\u3041-\u3096]/g, ch =>
+            String.fromCharCode(ch.charCodeAt(0) + 0x60)
+        ) // ひらがな→カタカナ
+        .toLowerCase()
+        .replace(/\s+/g, "");
+}
 let scanner = null;
 let stores = [];
 
@@ -388,11 +396,13 @@ productInput.addEventListener("input", () => {
 
     if (!keyword) return;
 
+    const searchWord = normalizeText(keyword);
+
     const matches = products
-        .filter(product =>
-            product.name.includes(keyword)
-        )
-        .map(product => product.name);
+     .filter(product =>
+        normalizeText(product.name).includes(searchWord)
+     )
+     .map(product => product.name);
 
     matches.forEach(name => {
 
@@ -420,8 +430,10 @@ storeInput.addEventListener("input", () => {
 
     if (!keyword) return;
 
+    const searchWord = normalizeText(keyword);
+
     const matches = stores.filter(store =>
-        store.startsWith(keyword)
+       normalizeText(store).includes(searchWord)
     );
 
     matches.forEach(store => {
@@ -453,8 +465,10 @@ storeInput.addEventListener("focus", () => {
 
     storeSuggestionsBox.innerHTML = "";
 
+    const searchWord = normalizeText(keyword);
+
     const matches = stores.filter(store =>
-        store.startsWith(keyword)
+     normalizeText(store).includes(searchWord)
     );
 
     matches.forEach(store => {
@@ -514,11 +528,13 @@ productInput.addEventListener("focus", () => {
 
     suggestionsBox.innerHTML = "";
 
+    const searchWord = normalizeText(keyword);
+
     const matches = products
      .filter(product =>
-        product.name.includes(keyword)
-    )
-    .map(product => product.name);
+        normalizeText(product.name).includes(searchWord)
+     )
+     .map(product => product.name);
 
     matches.forEach(name => {
 
@@ -548,12 +564,13 @@ newProductInput.addEventListener("input", () => {
 
     if (!keyword) return;
 
+    const searchWord = normalizeText(keyword);
+
     const matches = products
      .filter(product =>
-        product.name.includes(keyword)
+        normalizeText(product.name).includes(searchWord)
      )
      .map(product => product.name);
-
     matches.forEach(name => {
 
         const item =
@@ -586,11 +603,13 @@ newProductInput.addEventListener("focus", () => {
 
     newSuggestionsBox.innerHTML = "";
 
+    const searchWord = normalizeText(keyword);
+
     const matches = products
      .filter(product =>
-        product.name.includes(keyword)
+        normalizeText(product.name).includes(searchWord)
      )
-    .map(product => product.name);
+     .map(product => product.name);
 
     matches.forEach(name => {
 
