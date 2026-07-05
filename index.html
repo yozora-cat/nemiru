@@ -3,161 +3,489 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ネミル</title>
+<title>ネミル — 底値・買い時データベース</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-body{
-    font-family:sans-serif;
-    background:#f5f5f5;
-    margin:0;
-    padding:20px;
+:root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --surface-muted: #f8fafc;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --primary: #059669;
+    --primary-dark: #047857;
+    --primary-light: #d1fae5;
+    --accent: #0ea5e9;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06);
+    --shadow-lg: 0 4px 6px rgba(15, 23, 42, 0.04), 0 20px 40px rgba(15, 23, 42, 0.08);
 }
 
-.container{
-    max-width:800px;
-    margin:auto;
+* {
+    box-sizing: border-box;
 }
 
-.card{
-    background:white;
-    border-radius:12px;
-    padding:20px;
-    margin-bottom:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+body {
+    font-family: "Noto Sans JP", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-input{
-    width:100%;
-    padding:12px;
-    font-size:16px;
-    box-sizing:border-box;
+.site-header {
+    background: linear-gradient(135deg, #047857 0%, #059669 50%, #0d9488 100%);
+    color: white;
+    padding: 28px 20px 48px;
+    position: relative;
+    overflow: hidden;
 }
 
-button{
-    margin-top:12px;
-    width:100%;
-    padding:12px;
-    border:0;
-    border-radius:8px;
-    background:#2563eb;
-    color:white;
-    font-size:16px;
-    font-weight:bold;
+.site-header::before {
+    content: "";
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 280px;
+    height: 280px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
 }
 
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:12px;
-    margin:16px 0;
+.site-header::after {
+    content: "";
+    position: absolute;
+    bottom: -60%;
+    left: -5%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
 }
 
-.stat-card{
-    background:#f8fafc;
-    border:1px solid #e5e7eb;
-    border-radius:8px;
-    padding:14px;
+.header-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
-.stat-label{
-    color:#64748b;
-    font-size:13px;
-    margin-bottom:6px;
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
-.stat-value{
-    color:#111827;
-    font-size:20px;
-    font-weight:bold;
+.logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-size: 1.4rem;
+    backdrop-filter: blur(8px);
 }
 
-.rank{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px 0;
-    border-bottom:1px solid #eee;
+.tagline {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.9;
+    font-weight: 400;
 }
 
-.rank-label{
-    min-width:36px;
-    color:#111827;
-    font-weight:bold;
+.container {
+    max-width: 720px;
+    margin: -28px auto 0;
+    padding: 0 16px 48px;
+    position: relative;
+    z-index: 2;
 }
 
-.rank-main{
-    flex:1;
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
 }
 
-.rank-price{
-    color:#111827;
-    font-weight:bold;
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.good{
-    color:green;
-    font-weight:bold;
+.card-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
-.bad{
-    color:red;
-    font-weight:bold;
+.card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--primary-light);
+    border-radius: 10px;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
-@media (max-width:600px){
-    body{
-        padding:12px;
-    }
-
-    .card{
-        padding:16px;
-        border-radius:8px;
-    }
-
-    .stats-grid{
-        grid-template-columns:1fr;
-    }
-
-    .rank{
-        align-items:flex-start;
-    }
+.section-heading {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 28px 0 12px 4px;
 }
+
+.search-card {
+    padding: 20px;
+}
+
+.search-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.search-row {
+    display: flex;
+    gap: 10px;
+}
+
+.input-wrap {
+    position: relative;
+    flex: 1;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+input::placeholder {
+    color: #94a3b8;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 24px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, #0d9488 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.btn-icon {
+    flex: 0 0 auto;
+    width: 48px;
+    padding: 0;
+    background: var(--surface-muted);
+    border: 1.5px solid var(--border);
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+.btn-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.field-group {
+    margin-bottom: 16px;
+}
+
+.field-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.product-row {
+    display: flex;
+    gap: 10px;
+}
+
+.product-row input {
+    flex: 1;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: var(--surface-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    color: var(--text);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.current-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1px solid #bbf7d0;
+    border-radius: var(--radius-sm);
+    margin-bottom: 4px;
+}
+
+.price-large {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    letter-spacing: -0.03em;
+}
+
+.score-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.score-value {
+    font-size: 1.1rem;
+    color: var(--primary-dark);
+}
+
+.score-bar {
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, #34d399 100%);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 99px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.badge-good {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-warn {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-bad {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.rank {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.rank:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.rank:first-child {
+    padding-top: 0;
+}
+
+.rank-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.rank-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.rank-product {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.rank-store {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.rank-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    white-space: nowrap;
+}
+
+.rank-top .rank-price {
+    font-size: 1.1rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    opacity: 0.6;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
 .suggestions {
-    background: white;
-    border: 1px solid #ddd;
-    max-height: 200px;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    max-height: 220px;
     overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
 }
 
 .suggestion-item {
-    padding: 10px;
+    padding: 12px 16px;
     cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.1s;
+    border-bottom: 1px solid var(--border);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
 }
 
 .suggestion-item:hover {
-    background: #f0f0f0;
-}
-.product-row{
-    display:flex;
-    gap:10px;
+    background: var(--primary-light);
+    color: var(--primary-dark);
 }
 
-.product-row input{
-    flex:3;
-    width:auto;
-}
-
-.barcode-btn{
-    flex:1 !important;
-    width:auto !important;
-    margin-top:0;
-}
-.barcode-btn:disabled{
-    background:#9ca3af;
-    cursor:not-allowed;
-    opacity:0.7;
-}
-#scanner{
+#scanner {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -168,129 +496,161 @@ button{
     display: none;
 }
 
-#scanner video{
-    width:100% !important;
-    height:100% !important;
-    object-fit:cover !important;
+#scanner video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
 }
-#closeScanner{
-    display:none;
-    position:fixed;
-    top:20px;
-    right:20px;
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:white;
-    color:black;
-    font-size:24px;
-    z-index:100001;
+
+#closeScanner {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    color: black;
+    font-size: 24px;
+    z-index: 100001;
+    border: none;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .site-header {
+        padding: 24px 16px 44px;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    .container {
+        padding: 0 12px 40px;
+    }
+
+    .card {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .search-row {
+        flex-direction: column;
+    }
+
+    .search-row .btn-primary {
+        width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .price-large {
+        font-size: 1.5rem;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<header class="site-header">
+    <div class="header-inner">
+        <h1 class="logo">
+            <span class="logo-icon">🛒</span>
+            ネミル
+        </h1>
+        <p class="tagline">みんなで作る底値・買い時データベース</p>
+    </div>
+</header>
 
-    <h1>🛒 ネミル</h1>
+<main class="container">
 
-<div class="card">
-    <h2>商品検索</h2>
+    <section class="card search-card">
+        <label class="search-label" for="productName">商品を検索</label>
+        <div class="search-row">
+            <div class="input-wrap">
+                <input id="productName" type="text" value="アタック抗菌EX" placeholder="商品名を入力…" autocomplete="off">
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+            <button class="btn btn-primary" onclick="searchProduct()">検索</button>
+        </div>
+    </section>
 
-    <input id="productName" type="text" value="アタック抗菌EX">
+    <section id="result" class="card">
+        <div class="card-header">
+            <span class="card-icon">📊</span>
+            <h2>検索結果</h2>
+        </div>
+        <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <p>商品名を入力して検索してください</p>
+        </div>
+    </section>
 
-    <div id="suggestions" class="suggestions"></div>
+    <section id="ranking" class="card">
+        <div class="card-header">
+            <span class="card-icon">🏪</span>
+            <h2>店舗ランキング</h2>
+        </div>
+        <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <p>商品を検索すると店舗別の最安値が表示されます</p>
+        </div>
+    </section>
 
-    <button onclick="searchProduct()">
-        検索
-    </button>
-</div>
-
-<div id="result" class="card">
-        <h2>検索結果</h2>
-    <p>商品を検索してください</p>
-</div>
-<div id="ranking" class="card">
-    <h2>店舗ランキング</h2>
-    <p>商品を検索してください</p>
-</div>
-<h2>みんなの価格投稿</h2>
-<div id="price-list"></div>
-<div class="card">
-    <h2>価格投稿</h2>
-
-    <div class="product-row">
-
-        <input id="newProduct"
-               type="text"
-               placeholder="商品名">        
-        <button
-            class="barcode-btn"
-            disabled
-            title="近日対応予定">
-             📷
-        </button>
-     <input
-     type="file"
-     id="barcodeFile"
-     accept="image/*"
-     capture="environment"
-     style="display:none">
+    <h2 class="section-heading">みんなの価格投稿</h2>
+    <div id="price-list" class="card">
+        <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <p>まだ投稿がありません</p>
+        </div>
     </div>
 
-    <div id="newSuggestions"
-         class="suggestions"></div>
+    <section class="card">
+        <div class="card-header">
+            <span class="card-icon">✏️</span>
+            <h2>価格を投稿</h2>
+        </div>
 
-    <br>
+        <div class="field-group">
+            <label class="field-label" for="newProduct">商品名</label>
+            <div class="product-row">
+                <div class="input-wrap" style="flex:1">
+                    <input id="newProduct" type="text" placeholder="例：アタック抗菌EX" autocomplete="off">
+                    <div id="newSuggestions" class="suggestions"></div>
+                </div>
+                <button class="btn btn-icon" disabled title="近日対応予定">📷</button>
+                <input type="file" id="barcodeFile" accept="image/*" capture="environment" style="display:none">
+            </div>
+        </div>
 
-    <input id="newStore"
-           type="text"
-           placeholder="店舗名">
+        <div class="field-group">
+            <label class="field-label" for="newStore">店舗名</label>
+            <div class="input-wrap">
+                <input id="newStore" type="text" placeholder="例：コスモス" autocomplete="off">
+                <div id="storeSuggestions" class="suggestions"></div>
+            </div>
+        </div>
 
-    <div id="storeSuggestions"
-         class="suggestions"></div>
+        <div class="field-group">
+            <label class="field-label" for="newPrice">価格（円）</label>
+            <input id="newPrice" type="number" placeholder="298" min="0">
+        </div>
 
-    <br>
+        <button class="btn btn-primary btn-block" onclick="addPrice()">投稿する</button>
+    </section>
 
-    <input id="newPrice"
-           type="number"
-           placeholder="価格">
+</main>
 
-    <br>
+<div id="scanner"></div>
+<button id="closeScanner">✕</button>
 
-    <button onclick="addPrice()">
-        登録
-    </button>
-</div>
-    <div class="card">
-        <h2>買い時判定</h2>
-
-        <p>現在価格：398円</p>
-        <p>過去90日底値：298円</p>
-        <p>平均価格：378円</p>
-
-        <p class="bad">
-            今はやや高めです
-        </p>
-    </div>
-
-    <div class="card">
-        <h2>近所の価格ランキング</h2>
-
-        <div class="rank">🥇 コスモス　298円</div>
-        <div class="rank">🥈 ダイレックス　318円</div>
-        <div class="rank">🥉 サニー　328円</div>
-        <div class="rank">4位 マックスバリュ　348円</div>
-
-    </div>
-
-</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/@zxing/browser@latest"></script>
 <script src="app.js"></script>
-    <div id="scanner">
-    </div>
-            <button id="closeScanner">✕</button>
 </body>
 </html>

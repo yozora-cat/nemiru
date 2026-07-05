@@ -85,8 +85,8 @@ async function searchProduct() {
 
     const priceData = await loadPrices(name);
     const stats = calculatePriceStats(priceData);
-    const lowestPriceText = stats.count > 0 ? `${stats.lowestPrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
-    const averagePriceText = stats.count > 0 ? `${stats.averagePrice}&#20870;` : "&#20385;&#26684;&#12487;&#12540;&#12479;&#12394;&#12375;";
+    const lowestPriceText = stats.count > 0 ? `${stats.lowestPrice}円` : "データなし";
+    const averagePriceText = stats.count > 0 ? `${stats.averagePrice}円` : "データなし";
     const currentPriceText =
      stats.count > 0
         ? `${stats.latestPrice}円`
@@ -100,44 +100,57 @@ if (stats.count > 0) {
 }
 
 let judgement = "";
+let badgeClass = "badge-bad";
 
 if (score >= 95) {
-    judgement = "🟢 今が買い時！";
+    judgement = "今が買い時！";
+    badgeClass = "badge-good";
 }
 else if (score >= 80) {
-    judgement = "🟡 普通";
+    judgement = "普通の価格帯";
+    badgeClass = "badge-warn";
 }
 else {
-    judgement = "🔴 まだ高い";
+    judgement = "まだ高め";
+    badgeClass = "badge-bad";
 }
 
 document.getElementById("result").innerHTML = `
-<h2>${product.name}</h2>
+<div class="card-header">
+    <span class="card-icon">📦</span>
+    <h2>${product.name}</h2>
+</div>
 
-<p><strong>現在価格：</strong>${currentPriceText}</p>
+<div class="current-price">
+    <span class="stat-label">現在価格</span>
+    <span class="price-large">${currentPriceText}</span>
+</div>
 
 <div class="stats-grid">
-
     <div class="stat-card">
         <div class="stat-label">最安値</div>
         <div class="stat-value">${lowestPriceText}</div>
     </div>
-
     <div class="stat-card">
         <div class="stat-label">平均価格</div>
         <div class="stat-value">${averagePriceText}</div>
     </div>
-
     <div class="stat-card">
         <div class="stat-label">投稿件数</div>
         <div class="stat-value">${stats.count}件</div>
     </div>
-
 </div>
 
-<p><strong>買い時スコア：</strong>${score}点</p>
-
-<p>${judgement}</p>
+<div class="score-section">
+    <div class="score-header">
+        <span>買い時スコア</span>
+        <span class="score-value">${score}点</span>
+    </div>
+    <div class="score-bar">
+        <div class="score-fill" style="width:${score}%"></div>
+    </div>
+    <span class="badge ${badgeClass}">${judgement}</span>
+</div>
 `;
 
 renderProductRanking(priceData);
@@ -218,20 +231,27 @@ function renderProductRanking(priceData) {
 
     {
         let rankingHtml = `
-<h2>&#24215;&#33303;&#12521;&#12531;&#12461;&#12531;&#12464;</h2>
+<div class="card-header">
+    <span class="card-icon">🏪</span>
+    <h2>店舗ランキング</h2>
+</div>
 `;
 
         if (!priceData || priceData.length === 0) {
-            rankingHtml += `<p>&#20385;&#26684;&#12487;&#12540;&#12479;&#12364;&#12354;&#12426;&#12414;&#12379;&#12435;</p>`;
+            rankingHtml += `
+<div class="empty-state">
+    <div class="empty-state-icon">📋</div>
+    <p>価格データがありません</p>
+</div>`;
         } else {
             priceData.forEach((item, index) => {
+                const topClass = index < 3 ? " rank-top" : "";
                 rankingHtml += `
-    <div class="rank">
+    <div class="rank${topClass}">
         <span class="rank-label">${getRankLabel(index)}</span>
         <span class="rank-main">${item.store_name}</span>
-        <span class="rank-price">${item.price}&#20870;</span>
-    </div>
-    `;
+        <span class="rank-price">${item.price}円</span>
+    </div>`;
             });
         }
 
@@ -343,14 +363,25 @@ async function loadPrices(productName = "") {
 list.innerHTML = "";
 
 {
+if (latestData.length === 0) {
+    list.innerHTML = `
+<div class="empty-state">
+    <div class="empty-state-icon">💬</div>
+    <p>まだ投稿がありません</p>
+</div>`;
+    return latestData;
+}
+
 latestData.forEach((item, index) => {
     list.innerHTML += `
         <div class="rank">
             <span class="rank-label">${getRankLabel(index)}</span>
-            <span class="rank-main">${item.product_name}<br>${item.store_name}</span>
-            <span class="rank-price">${item.price}&#20870;</span>
-        </div>
-    `;
+            <div class="rank-main">
+                <div class="rank-product">${item.product_name}</div>
+                <div class="rank-store">${item.store_name}</div>
+            </div>
+            <span class="rank-price">${item.price}円</span>
+        </div>`;
 });
 
 return latestData;
