@@ -38,14 +38,14 @@ async function loadStores() {
     const { data, error } = await db
         .from("store_master")
         .select("*")
-        .order("name");
+        .order("store_name");
 
     if (error) {
         console.error(error);
         return;
     }
 
-    stores = data.map(store => store.name);
+    stores = data.map(store => store.store_name);
 
     console.log("店舗データ読み込み完了");
     console.log(stores);
