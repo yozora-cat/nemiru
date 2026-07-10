@@ -663,33 +663,188 @@ newProductInput.addEventListener("focus", () => {
 
 });
 
+function getDistinctOptions(rows, codeKey, labelKey) {
+
+    const map = new Map();
+
+    rows.forEach(row => {
+        const code = row[codeKey];
+        const label = row[labelKey];
+
+        if (code == null || code === "" || map.has(String(code))) {
+            return;
+        }
+
+        map.set(String(code), label);
+    });
+
+    return [...map.entries()]
+        .map(([code, label]) => ({ code, label }))
+        .sort((a, b) => String(a.label).localeCompare(String(b.label), "ja"));
+}
+
+function fillCodeSelect(selectEl, options) {
+
+    selectEl.innerHTML = "";
+
+    options.forEach(({ code, label }) => {
+        const option = document.createElement("option");
+        option.value = code;
+        option.textContent = label;
+        selectEl.appendChild(option);
+    });
+}
+
+function getUserSettings() {
+
+    return {
+        brand_code: localStorage.getItem("brand_code") || "",
+        region_code: localStorage.getItem("region_code") || "",
+        prefecture_code: localStorage.getItem("prefecture_code") || "",
+        city: localStorage.getItem("city") || ""
+    };
+}
+
+function saveRegionSettings({ region_code, prefecture_code, city }) {
+
+    localStorage.setItem("region_code", region_code);
+    localStorage.setItem("prefecture_code", prefecture_code);
+    localStorage.setItem("city", city);
+    localStorage.removeItem("region");
+    localStorage.removeItem("prefecture");
+}
+
+async function loadRegions() {
+
+    const { data, error } = await db
+        .from("store_master")
+        .select("region, region_code")
+        .order("region_code");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const regions = getDistinctOptions(data, "region_code", "region");
+    const regionSelect = document.getElementById("regionSelect");
+
+    fillCodeSelect(regionSelect, regions);
+
+    const { region_code: savedRegionCode } = getUserSettings();
+    const selectedRegionCode =
+        savedRegionCode && regions.some(item => item.code === savedRegionCode)
+            ? savedRegionCode
+            : regions[0]?.code;
+
+    if (selectedRegionCode) {
+        regionSelect.value = selectedRegionCode;
+        await loadPrefectures(selectedRegionCode);
+    }
+}
+
+async function loadPrefectures(regionCode) {
+
+    const { data, error } = await db
+        .from("store_master")
+        .select("prefecture, prefecture_code")
+        .eq("region_code", regionCode)
+        .order("prefecture_code");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const prefectures = getDistinctOptions(data, "prefecture_code", "prefecture");
+    const prefectureSelect = document.getElementById("prefectureSelect");
+
+    fillCodeSelect(prefectureSelect, prefectures);
+
+    const { prefecture_code: savedPrefectureCode } = getUserSettings();
+    const selectedPrefectureCode =
+        savedPrefectureCode && prefectures.some(item => item.code === savedPrefectureCode)
+            ? savedPrefectureCode
+            : prefectures[0]?.code;
+
+    if (selectedPrefectureCode) {
+        prefectureSelect.value = selectedPrefectureCode;
+        await loadCities(selectedPrefectureCode);
+    }
+}
+
+async function loadCities(prefectureCode) {
+
+    const { data, error } = await db
+        .from("store_master")
+        .select("city")
+        .eq("prefecture_code", Number(prefectureCode))
+        .order("city");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const cities = [...new Set(data.map(row => row.city).filter(Boolean))];
+    const citySelect = document.getElementById("citySelect");
+
+    citySelect.innerHTML = "";
+
+    cities.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+    });
+
+    const { city: savedCity } = getUserSettings();
+
+    if (savedCity && cities.includes(savedCity)) {
+        citySelect.value = savedCity;
+    }
+}
+
 const regionModal =
 document.getElementById("regionModal");
+
+const regionSelect =
+document.getElementById("regionSelect");
+
+const prefectureSelect =
+document.getElementById("prefectureSelect");
 
 if(localStorage.getItem("city")){
 
     regionModal.style.display="none";
 
+}else{
+
+    loadRegions();
+
 }
+
+regionSelect.addEventListener("change", () => {
+
+    loadPrefectures(regionSelect.value);
+
+});
+
+prefectureSelect.addEventListener("change", () => {
+
+    loadCities(prefectureSelect.value);
+
+});
 
 document
 .getElementById("saveRegionBtn")
 .addEventListener("click",()=>{
 
-    localStorage.setItem(
-        "region",
-        document.getElementById("regionSelect").value
-    );
-
-    localStorage.setItem(
-        "prefecture",
-        document.getElementById("prefectureSelect").value
-    );
-
-    localStorage.setItem(
-        "city",
-        document.getElementById("citySelect").value
-    );
+    saveRegionSettings({
+        region_code: document.getElementById("regionSelect").value,
+        prefecture_code: document.getElementById("prefectureSelect").value,
+        city: document.getElementById("citySelect").value
+    });
 
     regionModal.style.display="none";
 
