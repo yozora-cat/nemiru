@@ -552,6 +552,78 @@ input::placeholder {
         font-size: 1.5rem;
     }
 }
+
+.region-modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.region-card{
+
+    width:340px;
+
+    background:#fff;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.2);
+
+}
+
+.region-card h2{
+
+    text-align:center;
+
+    margin-bottom:20px;
+
+}
+
+.region-card label{
+
+    display:block;
+
+    margin-top:15px;
+
+    margin-bottom:5px;
+
+    font-weight:bold;
+
+}
+
+.region-card select{
+
+    width:100%;
+
+    padding:10px;
+
+    border-radius:10px;
+
+    border:1px solid #ddd;
+
+}
+
+.region-card button{
+
+    margin-top:25px;
+
+    width:100%;
+
+}
 </style>
 </head>
 
@@ -648,6 +720,40 @@ input::placeholder {
 
 <div id="scanner"></div>
 <button id="closeScanner">✕</button>
+
+<div id="regionModal" class="region-modal">
+
+    <div class="region-card">
+
+        <h2>地域を設定してください</h2>
+
+        <label>地方</label>
+
+        <select id="regionSelect">
+            <option>九州</option>
+        </select>
+
+        <label>都道府県</label>
+
+        <select id="prefectureSelect">
+            <option>福岡県</option>
+        </select>
+
+        <label>市町村</label>
+
+        <select id="citySelect">
+            <option>柳川市</option>
+        </select>
+
+        <button id="saveRegionBtn">
+
+            決定
+
+        </button>
+
+    </div>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/@zxing/browser@latest"></script>

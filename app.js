@@ -662,6 +662,38 @@ newProductInput.addEventListener("focus", () => {
     });
 
 });
+
+const regionModal =
+document.getElementById("regionModal");
+
+if(localStorage.getItem("city")){
+
+    regionModal.style.display="none";
+
+}
+
+document
+.getElementById("saveRegionBtn")
+.addEventListener("click",()=>{
+
+    localStorage.setItem(
+        "region",
+        document.getElementById("regionSelect").value
+    );
+
+    localStorage.setItem(
+        "prefecture",
+        document.getElementById("prefectureSelect").value
+    );
+
+    localStorage.setItem(
+        "city",
+        document.getElementById("citySelect").value
+    );
+
+    regionModal.style.display="none";
+
+});
 //document.getElementById("barcodeFile")
 //.addEventListener(
 //    "change",
