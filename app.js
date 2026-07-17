@@ -30,9 +30,68 @@ function normalizeText(str) {
         .toLowerCase()
         .replace(/\s+/g, "");
 }
+function findBrandCodes(keyword) {
+
+    keyword = normalizeText(keyword);
+
+    const result = [];
+
+    Object.entries(brandMap).forEach(([code, brand]) => {
+
+        const hit =
+            normalizeText(brand.brand_name).includes(keyword) ||
+
+            brand.search_keywords.some(k =>
+                normalizeText(k).includes(keyword)
+            );
+
+        if (hit) {
+            result.push(code);
+        }
+
+    });
+
+    return result;
+
+}
 let scanner = null;
 let stores = [];
+let brands = [];
+let brandMap = {};
+async function loadBrands() {
 
+    const { data, error } = await db
+        .from("brands")
+        .select("*")
+        .order("brand_name");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    brands = data;
+console.log(data);
+    brandMap = {};
+
+    data.forEach(brand => {
+
+        brandMap[brand.brand_code] = {
+
+            brand_name: brand.brand_name,
+
+            search_keywords: (brand.search_keywords || "")
+                .split(",")
+                .map(k => k.trim().toLowerCase())
+
+        };
+
+    });
+
+    console.log("ブランド読込完了");
+    console.log(brandMap);
+
+}
 async function loadStores() {
 
     const { data, error } = await db
@@ -45,12 +104,16 @@ async function loadStores() {
         return;
     }
 
-    stores = data.map(store => store.store_name);
+    stores = data;
 
     console.log("店舗データ読み込み完了");
     console.log(stores);
+    console.log(
+       [...new Set(stores.map(s => s.city))]
+    );
 }
 
+loadBrands();
 loadStores();
 console.log("ネミル 起動");
 console.log("Supabase接続完了");
@@ -460,22 +523,48 @@ storeInput.addEventListener("input", () => {
 
     const searchWord = normalizeText(keyword);
 
-    const matches = stores.filter(store =>
-       normalizeText(store).includes(searchWord)
-    );
+    const selectedCities =
+      JSON.parse(localStorage.getItem("selectedCities")) || [];
+
+    console.log("検索で使う地域:", selectedCities);
+
+    const matchedBrandCodes = findBrandCodes(searchWord);
+
+    const matches = stores.filter(store => {
+        console.log(store.store_name, store.city);
+    // 地域フィルター
+    if (
+        selectedCities.length > 0 &&
+        !selectedCities.includes(store.city)
+    ) {
+        return false;
+    }
+
+    // 店舗名検索
+    if (normalizeText(store.store_name).includes(searchWord)) {
+        return true;
+    }
+
+    // ブランド検索
+    if (matchedBrandCodes.includes(store.brand_code)) {
+        return true;
+    }
+
+    return false;
+
+});
 
     matches.forEach(store => {
 
         const item = document.createElement("div");
 
-        item.textContent = store;
+        item.textContent = store.store_name;
 
         item.className = "suggestion-item";
 
         item.onclick = () => {
 
-            storeInput.value = store;
-
+            storeInput.value = store.store_name;
             storeSuggestionsBox.innerHTML = "";
 
         };
@@ -495,21 +584,46 @@ storeInput.addEventListener("focus", () => {
 
     const searchWord = normalizeText(keyword);
 
-    const matches = stores.filter(store =>
-     normalizeText(store).includes(searchWord)
-    );
+    const selectedCities =
+        JSON.parse(localStorage.getItem("selectedCities")) || [];
+
+    const matchedBrandCodes = findBrandCodes(searchWord);
+
+    const matches = stores.filter(store => {
+
+    // 地域フィルター
+         if (
+             selectedCities.length > 0 &&
+             !selectedCities.includes(store.city)
+    ) {
+        return false;
+    }
+
+    // 店舗名検索
+    if (normalizeText(store.store_name).includes(searchWord)) {
+        return true;
+    }
+
+    // ブランド検索
+    if (matchedBrandCodes.includes(store.brand_code)) {
+        return true;
+    }
+
+    return false;
+
+});
 
     matches.forEach(store => {
 
         const item = document.createElement("div");
 
-        item.textContent = store;
+        item.textContent = store.store_name;
 
         item.className = "suggestion-item";
 
         item.onclick = () => {
 
-            storeInput.value = store;
+            storeInput.value = store.store_name;
 
             storeSuggestionsBox.innerHTML = "";
 
@@ -847,6 +961,91 @@ document
     });
 
     regionModal.style.display="none";
+
+});
+function openCitySettings(){
+
+    const cityList =
+        document.getElementById("cityList");
+
+    cityList.innerHTML = "";
+
+    const selectedCities =
+     JSON.parse(localStorage.getItem("selectedCities")) || [];
+
+    const cities = [...new Set(
+        stores
+            .map(store => store.city)
+            .filter(Boolean)
+    )].sort();
+
+    cities.forEach(city => {
+
+        const label = document.createElement("label");
+
+        const checked =
+           selectedCities.includes(city)
+               ? "checked"
+               : "";
+
+        label.innerHTML = `
+            <input
+                 type="checkbox"
+                 value="${city}"
+                 ${checked}
+            >
+            ${city}
+        `;
+
+        cityList.appendChild(label);
+        cityList.appendChild(document.createElement("br"));
+
+    });
+
+    document
+        .getElementById("citySettings")
+        .classList.remove("hidden");
+
+}
+// 設定ボタン
+document
+.getElementById("settingsButton")
+.addEventListener("click", () => {
+
+    openCitySettings();
+
+});
+
+document
+.getElementById("closeCitySettings")
+.addEventListener("click", () => {
+
+    document
+        .getElementById("citySettings")
+        .classList.add("hidden");
+
+});
+
+document
+.getElementById("saveCitySettings")
+.addEventListener("click", () => {
+
+    const checkedCities = [];
+
+    document
+    .querySelectorAll("#cityList input:checked")
+    .forEach(cb => {
+
+        checkedCities.push(cb.value);
+
+    });
+
+    localStorage.setItem(
+        "selectedCities",
+        JSON.stringify(checkedCities)
+    );
+
+    alert("地域設定を保存しました");
 
 });
 //document.getElementById("barcodeFile")
