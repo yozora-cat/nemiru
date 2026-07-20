@@ -680,15 +680,39 @@ input::placeholder {
 
 .modal-content{
 
-    width:320px;
+    width:420px;
 
     max-width:90%;
+
+    max-height:90vh;
 
     background:white;
 
     border-radius:12px;
 
     padding:24px;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+#cityList{
+
+    overflow-y:auto;
+
+    flex:1;
+
+    margin:16px 0;
+
+}
+.city-buttons{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:10px;
 
 }
 </style>
@@ -812,7 +836,7 @@ input::placeholder {
         <label>市町村</label>
 
         <select id="citySelect">
-            <option>柳川市</option>
+            <option>福岡市</option>
         </select>
 
         <button id="saveRegionBtn">

@@ -8,7 +8,7 @@ async function loadProducts() {
     const { data, error } = await db
         .from("product_master")
         .select("*")
-        .order("name");
+        .order("product_name");
 
     if (error) {
         console.error(error);
@@ -17,7 +17,11 @@ async function loadProducts() {
 
     products = data;
 
+    console.log(data);
+    console.log(data.length);
+
     console.log("商品マスター読込完了");
+    console.log(products[0]);
 }
 
 loadProducts();
@@ -127,7 +131,7 @@ async function searchProduct() {
     const { data, error } = await db
         .from("product_master")
         .select("*")
-        .eq("name", name);
+        .eq("product_name", name);
     console.log("全件取得:", data);
     console.log("検索文字:", name);
     console.log("Supabase結果:", data);
@@ -181,7 +185,7 @@ else {
 document.getElementById("result").innerHTML = `
 <div class="card-header">
     <span class="card-icon">📦</span>
-    <h2>${product.name}</h2>
+    <h2>${product.product_name}</h2>
 </div>
 
 <div class="current-price">
@@ -420,7 +424,28 @@ async function loadPrices(productName = "") {
     }
 
     console.log("取得した価格データ", data);
-    const latestData = getLatestPricesByStore(data);
+    const selectedCities =
+    　　JSON.parse(localStorage.getItem("selectedCities")) || [];
+    let filteredData = data;
+
+　　if (selectedCities.length > 0) {
+
+    　　filteredData = data.filter(price => {
+
+        const store = stores.find(
+            s => s.store_name === price.store_name
+        );
+
+        return (
+            store &&
+            selectedCities.includes(store.city)
+        );
+
+    });
+
+}
+    const latestData =
+    　　getLatestPricesByStore(filteredData);
     const list = document.getElementById("price-list");
 
 list.innerHTML = "";
@@ -490,10 +515,32 @@ productInput.addEventListener("input", () => {
     const searchWord = normalizeText(keyword);
 
     const matches = products
-     .filter(product =>
-        normalizeText(product.name).includes(searchWord)
-     )
-     .map(product => product.name);
+        .filter(product => {
+
+           if (
+               normalizeText(product.product_name).includes(searchWord)
+           ) {
+               return true;
+           }
+
+           if (
+               product.brand_name &&
+               normalizeText(product.brand_name).includes(searchWord)
+           ) {
+               return true;
+         　　  }
+
+           if (
+               product.search_keywords &&
+               normalizeText(product.search_keywords).includes(searchWord)
+           ) {
+               return true;
+           }
+
+           return false;
+
+        })
+       .map(product => product.product_name);
 
     matches.forEach(name => {
 
@@ -526,12 +573,10 @@ storeInput.addEventListener("input", () => {
     const selectedCities =
       JSON.parse(localStorage.getItem("selectedCities")) || [];
 
-    console.log("検索で使う地域:", selectedCities);
-
     const matchedBrandCodes = findBrandCodes(searchWord);
 
     const matches = stores.filter(store => {
-        console.log(store.store_name, store.city);
+
     // 地域フィルター
     if (
         selectedCities.length > 0 &&
@@ -674,9 +719,9 @@ productInput.addEventListener("focus", () => {
 
     const matches = products
      .filter(product =>
-        normalizeText(product.name).includes(searchWord)
+        normalizeText(product.product_name).includes(searchWord)
      )
-     .map(product => product.name);
+     .map(product => product.product_name);
 
     matches.forEach(name => {
 
@@ -710,9 +755,9 @@ newProductInput.addEventListener("input", () => {
 
     const matches = products
      .filter(product =>
-        normalizeText(product.name).includes(searchWord)
+        normalizeText(product.product_name).includes(searchWord)
      )
-     .map(product => product.name);
+     .map(product => product.product_name);
     matches.forEach(name => {
 
         const item =
@@ -749,9 +794,9 @@ newProductInput.addEventListener("focus", () => {
 
     const matches = products
      .filter(product =>
-        normalizeText(product.name).includes(searchWord)
+        normalizeText(product.product_name).includes(searchWord)
      )
-     .map(product => product.name);
+     .map(product => product.product_name);
 
     matches.forEach(name => {
 
