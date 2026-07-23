@@ -152,6 +152,12 @@ async function searchProduct() {
 
     const priceData = await loadPrices(name);
     const stats = calculatePriceStats(priceData);
+    const currentPriceLabel = stats.count > 0
+        ? `現在価格（${formatMonthDay(stats.latestCreatedAt)}）`
+        : "現在価格";
+    const lowestPriceLabel = stats.count > 0
+        ? `最安値（${formatMonthDay(stats.lowestCreatedAt)}）`
+        : "最安値";
     const lowestPriceText = stats.count > 0 ? `${stats.lowestPrice}円` : "データなし";
     const averagePriceText = stats.count > 0 ? `${stats.averagePrice}円` : "データなし";
     const currentPriceText =
@@ -189,13 +195,13 @@ document.getElementById("result").innerHTML = `
 </div>
 
 <div class="current-price">
-    <span class="stat-label">現在価格</span>
+    <span class="stat-label">${currentPriceLabel}</span>
     <span class="price-large">${currentPriceText}</span>
 </div>
 
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-label">最安値</div>
+        <div class="stat-label">${lowestPriceLabel}</div>
         <div class="stat-value">${lowestPriceText}</div>
     </div>
     <div class="stat-card">
@@ -229,6 +235,8 @@ function calculatePriceStats(priceData) {
             latestPrice: 0,
             lowestPrice: 0,
             averagePrice: 0,
+            latestCreatedAt: null,
+            lowestCreatedAt: null,
             count: 0
         };
     }
@@ -239,6 +247,9 @@ function calculatePriceStats(priceData) {
     );
 
     const latestPrice = Number(sortedData[0].price);
+    const lowestItem = sortedData.reduce((lowest, item) =>
+        Number(item.price) < Number(lowest.price) ? item : lowest
+    );
 
     const prices = sortedData
         .map(item => Number(item.price))
@@ -253,8 +264,39 @@ function calculatePriceStats(priceData) {
         latestPrice,
         lowestPrice: Math.min(...prices),
         averagePrice: Math.round(total / prices.length),
+        latestCreatedAt: sortedData[0].created_at,
+        lowestCreatedAt: lowestItem.created_at,
         count: prices.length
     };
+}
+
+function formatMonthDay(dateValue) {
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+function formatPostDate(dateValue) {
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const postDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const daysAgo = Math.floor((today - postDate) / (1000 * 60 * 60 * 24));
+    const monthDay = formatMonthDay(dateValue);
+
+    if (daysAgo <= 0) return "🟢 今日";
+    if (daysAgo === 1) return "🟡 昨日";
+    if (daysAgo <= 6) return `🔵 ${daysAgo}日前（${monthDay}）`;
+
+    return monthDay;
 }
 
 function getLatestPricesByStore(priceData) {
@@ -316,7 +358,7 @@ function renderProductRanking(priceData) {
                 rankingHtml += `
     <div class="rank${topClass}">
         <span class="rank-label">${getRankLabel(index)}</span>
-        <span class="rank-main">${item.store_name}</span>
+        <span class="rank-main">${item.store_name} <span class="post-date">${formatPostDate(item.created_at)}</span></span>
         <span class="rank-price">${item.price}円</span>
     </div>`;
             });
@@ -466,7 +508,7 @@ latestData.forEach((item, index) => {
             <span class="rank-label">${getRankLabel(index)}</span>
             <div class="rank-main">
                 <div class="rank-product">${item.product_name}</div>
-                <div class="rank-store">${item.store_name}</div>
+                <div class="rank-store">${item.store_name} <span class="post-date">${formatPostDate(item.created_at)}</span></div>
             </div>
             <span class="rank-price">${item.price}円</span>
         </div>`;
