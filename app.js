@@ -504,61 +504,44 @@ const storeInput =
 
 const storeSuggestionsBox =
     document.getElementById("storeSuggestions");
-productInput.addEventListener("input", () => {
 
-    const keyword = productInput.value.trim();
+function showProductSuggestions(inputElement, suggestionBox, onSelect) {
 
-    suggestionsBox.innerHTML = "";
+    const keyword = inputElement.value.trim();
+
+    suggestionBox.innerHTML = "";
 
     if (!keyword) return;
 
     const searchWord = normalizeText(keyword);
 
-    const matches = products
-        .filter(product => {
+    const matches = products.filter(product =>
+        normalizeText(product.product_name).includes(searchWord) ||
+        (product.search_keywords &&
+            normalizeText(product.search_keywords).includes(searchWord))
+    );
 
-           if (
-               normalizeText(product.product_name).includes(searchWord)
-           ) {
-               return true;
-           }
-
-           if (
-               product.brand_name &&
-               normalizeText(product.brand_name).includes(searchWord)
-           ) {
-               return true;
-         　　  }
-
-           if (
-               product.search_keywords &&
-               normalizeText(product.search_keywords).includes(searchWord)
-           ) {
-               return true;
-           }
-
-           return false;
-
-        })
-       .map(product => product.product_name);
-
-    matches.forEach(name => {
+    matches.forEach(product => {
 
         const item = document.createElement("div");
 
-        item.textContent = name;
+        item.textContent = product.product_name;
 
         item.className = "suggestion-item";
 
         item.onclick = () => {
-            productInput.value = name;
-            suggestionsBox.innerHTML = "";
-            searchProduct();
+            inputElement.value = product.product_name;
+            suggestionBox.innerHTML = "";
+
+            if (onSelect) onSelect();
         };
 
-        suggestionsBox.appendChild(item);
+        suggestionBox.appendChild(item);
     });
+}
 
+productInput.addEventListener("input", () => {
+    showProductSuggestions(productInput, suggestionsBox, searchProduct);
 });
 storeInput.addEventListener("input", () => {
 
@@ -708,6 +691,11 @@ document.addEventListener("click", (event) => {
     }
 });
 productInput.addEventListener("focus", () => {
+    showProductSuggestions(productInput, suggestionsBox, searchProduct);
+});
+
+/*
+productInput.addEventListener("focus", () => {
 
     const keyword = productInput.value.trim();
 
@@ -820,6 +808,15 @@ newProductInput.addEventListener("focus", () => {
 
     });
 
+});
+*/
+
+newProductInput.addEventListener("input", () => {
+    showProductSuggestions(newProductInput, newSuggestionsBox);
+});
+
+newProductInput.addEventListener("focus", () => {
+    showProductSuggestions(newProductInput, newSuggestionsBox);
 });
 
 function getDistinctOptions(rows, codeKey, labelKey) {
