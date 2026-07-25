@@ -1132,6 +1132,22 @@ document
     alert("地域設定を保存しました");
 
 });
+async function loadFooter() {
+
+    const footer = document.getElementById("footer");
+
+    if (!footer) return;
+
+    const response = await fetch("footer.html");
+
+    footer.innerHTML = await response.text();
+
+}
+
+loadFooter();
+       document.addEventListener("DOMContentLoaded", () => {
+          loadFooter();
+       });
 //document.getElementById("barcodeFile")
 //.addEventListener(
 //    "change",
