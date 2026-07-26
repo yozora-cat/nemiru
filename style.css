@@ -729,3 +729,102 @@ input::placeholder {
     font-size:12px;
     color:#999;
 }
+/* 地域設定画面のボタン */
+.region-buttons{
+
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    padding-bottom:16px;
+
+}
+
+.region-buttons button{
+
+    flex:1;
+    height:52px;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+
+}
+
+/* 戻る */
+.secondary-btn{
+
+    background:#ffffff;
+    color:#64748b;
+    border:1px solid #cbd5e1;
+
+}
+
+.secondary-btn:hover{
+
+    background:#f8fafc;
+
+}
+
+/* 決定 */
+.primary-btn{
+
+    background:#059669;
+    color:#ffffff;
+    border:none;
+
+}
+
+.primary-btn:hover{
+
+    background:#047857;
+
+}
+
+/* スマホ */
+@media (max-width:768px){
+
+    .region-buttons{
+
+        gap:10px;
+
+    }
+
+    .region-buttons button{
+
+        height:52px;
+        font-size:17px;
+
+    }
+
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 1000;
+    padding: 12px 18px;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 16px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast-success {
+    background: var(--primary-dark);
+}
+
+.toast-error {
+    background: var(--danger);
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}

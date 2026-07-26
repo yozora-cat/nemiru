@@ -2,6 +2,35 @@ const supabaseUrl = 'https://kbrrfilzdqshlimsgkdy.supabase.co'
 const supabaseKey = "sb_publishable_ByrFySYSPpOZPz7DEuNNHw_9LkM6IQj"
 const db = window.supabase.createClient(supabaseUrl, supabaseKey)
 let products = [];
+let toastTimer;
+
+function showToast(message, type = "success") {
+
+    let toast = document.getElementById("toast");
+
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toast";
+        toast.className = "toast";
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        document.body.appendChild(toast);
+    }
+
+    const icon = type === "error" ? "⚠" : "✔";
+
+    toast.textContent = `${icon} ${message}`;
+    toast.className = `toast toast-${type}`;
+
+    requestAnimationFrame(() => {
+        toast.classList.add("is-visible");
+    });
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("is-visible");
+    }, 2000);
+}
 
 async function loadProducts() {
 
@@ -138,13 +167,13 @@ async function searchProduct() {
     console.log("Supabaseエラー:", error);
 
     if (error) {
-    alert("検索エラー");
+    showToast("検索できませんでした", "error");
     console.log(error);
     return;
     }
 
     if (data.length === 0) {
-    alert("商品が見つかりません");
+    showToast("商品が見つかりません", "error");
     return;
     }
 
@@ -439,13 +468,12 @@ async function addPrice() {
 
 if(error){
     console.error("エラー詳細:", error);
-    alert("保存失敗");
+    showToast("投稿できませんでした", "error");
     return;
 }
 
-alert("Supabaseに保存成功！");
 await loadPrices();
-    alert("価格を登録しました");
+    showToast("投稿しました");
 }
 async function loadPrices(productName = "") {
 
@@ -1038,13 +1066,19 @@ document
 .getElementById("saveRegionBtn")
 .addEventListener("click",()=>{
 
-    saveRegionSettings({
-        region_code: document.getElementById("regionSelect").value,
-        prefecture_code: document.getElementById("prefectureSelect").value,
-        city: document.getElementById("citySelect").value
-    });
+    try {
+        saveRegionSettings({
+            region_code: document.getElementById("regionSelect").value,
+            prefecture_code: document.getElementById("prefectureSelect").value,
+            city: document.getElementById("citySelect").value
+        });
 
-    regionModal.style.display="none";
+        regionModal.style.display="none";
+        showToast("保存しました");
+    } catch (error) {
+        console.error(error);
+        showToast("保存できませんでした", "error");
+    }
 
 });
 function openCitySettings(){
@@ -1114,22 +1148,27 @@ document
 .getElementById("saveCitySettings")
 .addEventListener("click", () => {
 
-    const checkedCities = [];
+    try {
+        const checkedCities = [];
 
-    document
-    .querySelectorAll("#cityList input:checked")
-    .forEach(cb => {
+        document
+        .querySelectorAll("#cityList input:checked")
+        .forEach(cb => {
 
-        checkedCities.push(cb.value);
+            checkedCities.push(cb.value);
 
-    });
+        });
 
-    localStorage.setItem(
-        "selectedCities",
-        JSON.stringify(checkedCities)
-    );
+        localStorage.setItem(
+            "selectedCities",
+            JSON.stringify(checkedCities)
+        );
 
-    alert("地域設定を保存しました");
+        showToast("保存しました");
+    } catch (error) {
+        console.error(error);
+        showToast("保存できませんでした", "error");
+    }
 
 });
 async function loadFooter() {

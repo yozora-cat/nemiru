@@ -3,9 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ネミル — 底値・買い時データベース</title>
+<title>ネミル｜価格比較・最安値・買い時が分かる</title>
+<meta name="description"
+      content="ネミルは、商品の価格をみんなで投稿・共有する価格比較サービスです。最安値・平均価格・買い時がひと目で分かり、スーパーやドラッグストアでのお買い物をもっとお得にします。">
+
+<meta name="robots" content="index,follow">
+<meta name="author" content="ネミル">
+<meta name="application-name" content="ネミル">
+<!-- アイコン -->
 <link rel="icon" href="assets/logo/favicon.png">
 <link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png">
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#059669">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -152,17 +160,20 @@
         <h2>地域設定</h2>
 
         <div id="cityList">
-
             ここに地域一覧が表示されます
+        </div>
+
+        <div class="region-buttons">
+
+            <button id="closeCitySettings" class="secondary-btn">
+                戻る
+            </button>
+
+            <button id="saveCitySettings" class="primary-btn">
+                決定
+            </button>
 
         </div>
-        <button id="saveCitySettings">
-            保存
-        </button>
-        
-        <button id="closeCitySettings">
-            閉じる
-        </button>
 
     </div>
 
