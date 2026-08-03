@@ -520,7 +520,6 @@ async function loadPrices(productName = "") {
 
 list.innerHTML = "";
 
-{
 if (latestData.length === 0) {
     list.innerHTML = `
 <div class="empty-state">
@@ -530,7 +529,7 @@ if (latestData.length === 0) {
     return latestData;
 }
 
-latestData.forEach((item, index) => {
+latestData.slice(0, 5).forEach((item, index) => {
     list.innerHTML += `
         <div class="rank">
             <span class="rank-label">${getRankLabel(index)}</span>
@@ -543,21 +542,7 @@ latestData.forEach((item, index) => {
 });
 
 return latestData;
-}
 
-latestData.forEach((item, index) => {
-    list.innerHTML += `
-        <div class="rank">
-            #${index + 1}
-            ${item.product_name}
-            ${item.store_name}
-            ：
-            ${item.price}円
-        </div>
-    `;
-});
-
-return latestData;
 }
 
 loadPrices();
