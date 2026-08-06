@@ -228,6 +228,26 @@ input::placeholder {
     margin-top: 16px;
 }
 
+.btn-secondary {
+    background: var(--surface-muted);
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--border);
+}
+
+.post-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.post-buttons .btn-primary {
+    flex: 1;
+}
+
 .btn-icon {
     flex: 0 0 auto;
     width: 48px;

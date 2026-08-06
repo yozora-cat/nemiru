@@ -442,6 +442,12 @@ async function loadProductPrices(productName) {
 
     document.getElementById("ranking").innerHTML = rankingHtml;
 }
+function clearPostForm() {
+    document.getElementById("newProduct").value = "";
+    document.getElementById("newStore").value = "";
+    document.getElementById("newPrice").value = "";
+}
+
 async function addPrice() {
 
     const product =
@@ -472,8 +478,18 @@ if(error){
     return;
 }
 
-await loadPrices();
+    document.getElementById("newProduct").value = "";
+    document.getElementById("newPrice").value = "";
+
+    document.getElementById("productName").value = product;
+    await searchProduct();
+
     showToast("投稿しました");
+
+    document.getElementById("result").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 }
 async function loadPrices(productName = "") {
 
