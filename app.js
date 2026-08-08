@@ -253,6 +253,22 @@ document.getElementById("result").innerHTML = `
     </div>
     <span class="badge ${badgeClass}">${judgement}</span>
 </div>
+${product.affiliate_url ? `
+<div class="amazon-card">
+    <div class="amazon-card-title">
+        Amazonで購入
+    </div>
+
+    <a
+        href="${product.affiliate_url}"
+        target="_blank"
+        rel="nofollow sponsored noopener"
+        class="amazon-button"
+    >
+        Amazonで見る →
+    </a>
+</div>
+` : ""}
 `;
 
 renderProductRanking(priceData);
