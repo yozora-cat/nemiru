@@ -467,13 +467,23 @@ function clearPostForm() {
 async function addPrice() {
 
     const product =
-        document.getElementById("newProduct").value;
+        document.getElementById("newProduct").value.trim();
 
     const store =
-        document.getElementById("newStore").value;
+        document.getElementById("newStore").value.trim();
 
     const price =
-        document.getElementById("newPrice").value;
+        document.getElementById("newPrice").value.trim();
+
+    if (!product || !store || !price) {
+        showToast("商品名・店舗名・価格をすべて入力してください", "error");
+        return;
+    }
+
+    if (!Number.isFinite(Number(price)) || Number(price) <= 0) {
+        showToast("価格は0より大きい数値を入力してください", "error");
+        return;
+    }
 
     console.log("商品:", product);
     console.log("店舗:", store);
