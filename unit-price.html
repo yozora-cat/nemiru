@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ネミル｜単価計算</title>
+    <link rel="icon" href="assets/logo/favicon.png">
+    <link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#059669">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <h1 class="logo"><span class="logo-icon">🏷️</span>ネミル</h1>
+            <p class="tagline">商品の価格と内容量から、お得な商品を比較できます</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <header class="unit-page-heading">
+            <h2>🧮 単価計算</h2>
+            <p>商品の価格と内容量から、お得な商品を比較できます。</p>
+        </header>
+
+        <section class="card">
+            <div class="card-header"><span class="card-icon">A</span><h2>商品A</h2></div>
+            <div class="input-group">
+                <label for="productAPrice">価格</label>
+                <div class="input-with-unit">
+                    <input type="number" id="productAPrice" min="0" step="1" placeholder="298">
+                    <span>円</span>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="productAAmount">内容量</label>
+                <div class="input-with-unit">
+                    <input type="number" id="productAAmount" min="0" step="any" placeholder="800">
+                    <select id="productAUnit">
+                        <option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="L">L</option>
+                        <option value="個">個</option><option value="枚">枚</option><option value="本">本</option><option value="袋">袋</option><option value="箱">箱</option><option value="ロール">ロール</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header"><span class="card-icon">B</span><h2>商品B</h2></div>
+            <div class="input-group">
+                <label for="productBPrice">価格</label>
+                <div class="input-with-unit">
+                    <input type="number" id="productBPrice" min="0" step="1" placeholder="398">
+                    <span>円</span>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="productBAmount">内容量</label>
+                <div class="input-with-unit">
+                    <input type="number" id="productBAmount" min="0" step="any" placeholder="1">
+                    <select id="productBUnit">
+                        <option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="L">L</option>
+                        <option value="個">個</option><option value="枚">枚</option><option value="本">本</option><option value="袋">袋</option><option value="箱">箱</option><option value="ロール">ロール</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <button class="btn btn-primary btn-block" id="calculateButton" type="button">単価を計算する</button>
+
+        <section id="result" class="card hidden">
+            <div class="card-header"><span class="card-icon">🧮</span><h2>比較結果</h2></div>
+            <div id="resultContent"></div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主要メニュー">
+        <a class="bottom-nav-item" href="index.html"><span class="bottom-nav-icon" aria-hidden="true">🏷️</span><span>価格比較</span></a>
+        <a class="bottom-nav-item is-active" href="unit-price.html" aria-current="page"><span class="bottom-nav-icon" aria-hidden="true">🧮</span><span>単価計算</span></a>
+        <a class="bottom-nav-item" href="settings.html"><span class="bottom-nav-icon" aria-hidden="true">⚙️</span><span>設定</span></a>
+    </nav>
+    <script src="unit-price.js"></script>
+</body>
+</html>
