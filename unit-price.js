@@ -3,6 +3,15 @@ document
     .addEventListener("click", calculateUnitPrice);
 
 
+// クリアボタン
+document
+    .getElementById("clearButton")
+    .addEventListener("click", clearUnitPrice);
+
+
+/*
+ * 単価計算
+ */
 function calculateUnitPrice() {
 
     const priceA =
@@ -25,30 +34,161 @@ function calculateUnitPrice() {
         document.getElementById("productBUnit").value;
 
 
-    // 入力チェック
-    if (
-        !priceA ||
-        !amountA ||
-        !priceB ||
-        !amountB
-    ) {
+    const hasA =
+        priceA > 0 &&
+        amountA > 0;
 
-        alert("価格と内容量をすべて入力してください");
+    const hasB =
+        priceB > 0 &&
+        amountB > 0;
+
+
+    // AもBも入力されていない
+    if (!hasA && !hasB) {
+
+        alert("価格と内容量を少なくとも1つ入力してください");
 
         return;
     }
 
 
-    // 単位の種類を判定
+    /*
+     * Aだけ入力されている場合
+     */
+    if (hasA && !hasB) {
+
+        const typeA = getUnitType(unitA);
+
+        const normalizedA =
+            normalizeAmount(amountA, unitA);
+
+        const unitPriceA =
+            priceA / normalizedA;
+
+        const displayUnit =
+            getDisplayUnit(typeA);
+
+        const displayPriceA =
+            unitPriceA *
+            getDisplayMultiplier(typeA);
+
+
+        document
+            .getElementById("result")
+            .classList.remove("hidden");
+
+
+        document
+            .getElementById("resultContent")
+            .innerHTML = `
+
+                <div class="unit-price-result">
+
+                    <div class="result-item">
+                        <h3>商品A</h3>
+
+                        <strong>
+                            ${displayPriceA.toFixed(2)}円
+                        </strong>
+
+                        <span>
+                            / ${displayUnit}
+                        </span>
+                    </div>
+
+
+                    <div class="winner">
+                        商品Bを入力すると、
+                        2商品の単価を比較できます。
+                    </div>
+
+                </div>
+
+            `;
+
+
+        scrollToResult();
+
+        return;
+    }
+
+
+    /*
+     * Bだけ入力されている場合
+     */
+    if (!hasA && hasB) {
+
+        const typeB = getUnitType(unitB);
+
+        const normalizedB =
+            normalizeAmount(amountB, unitB);
+
+        const unitPriceB =
+            priceB / normalizedB;
+
+        const displayUnit =
+            getDisplayUnit(typeB);
+
+        const displayPriceB =
+            unitPriceB *
+            getDisplayMultiplier(typeB);
+
+
+        document
+            .getElementById("result")
+            .classList.remove("hidden");
+
+
+        document
+            .getElementById("resultContent")
+            .innerHTML = `
+
+                <div class="unit-price-result">
+
+                    <div class="result-item">
+                        <h3>商品B</h3>
+
+                        <strong>
+                            ${displayPriceB.toFixed(2)}円
+                        </strong>
+
+                        <span>
+                            / ${displayUnit}
+                        </span>
+                    </div>
+
+
+                    <div class="winner">
+                        商品Aを入力すると、
+                        2商品の単価を比較できます。
+                    </div>
+
+                </div>
+
+            `;
+
+
+        scrollToResult();
+
+        return;
+    }
+
+
+    /*
+     * A・B両方入力されている場合
+     */
+
+
     const typeA = getUnitType(unitA);
     const typeB = getUnitType(unitB);
 
 
-    // g / kg と ml / L を混ぜない
+    // g / kg と ml / L など、
+    // 異なる種類の単位は比較できない
     if (typeA !== typeB) {
 
         alert(
-            "同じ種類の単位で入力してください"
+            "商品Aと商品Bは同じ種類の単位で入力してください"
         );
 
         return;
@@ -77,22 +217,25 @@ function calculateUnitPrice() {
 
 
     const displayPriceA =
-        unitPriceA * getDisplayMultiplier(typeA);
+        unitPriceA *
+        getDisplayMultiplier(typeA);
 
     const displayPriceB =
-        unitPriceB * getDisplayMultiplier(typeA);
+        unitPriceB *
+        getDisplayMultiplier(typeA);
 
 
     let winner;
 
+
     if (unitPriceA < unitPriceB) {
 
-        winner = "商品Aの方がお得です！";
+        winner = "🏆 商品Aの方がお得です！";
 
     }
     else if (unitPriceB < unitPriceA) {
 
-        winner = "商品Bの方がお得です！";
+        winner = "🏆 商品Bの方がお得です！";
 
     }
     else {
@@ -140,12 +283,73 @@ function calculateUnitPrice() {
 
 
                 <div class="winner">
-                    🏆 ${winner}
+                    ${winner}
                 </div>
 
             </div>
 
         `;
+
+
+    scrollToResult();
+}
+
+
+/*
+ * 計算結果まで自動スクロール
+ */
+function scrollToResult() {
+
+    document
+        .getElementById("result")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+}
+
+
+/*
+ * クリア
+ */
+function clearUnitPrice() {
+
+    document
+        .getElementById("productAPrice")
+        .value = "";
+
+    document
+        .getElementById("productAAmount")
+        .value = "";
+
+    document
+        .getElementById("productAUnit")
+        .value = "g";
+
+
+    document
+        .getElementById("productBPrice")
+        .value = "";
+
+    document
+        .getElementById("productBAmount")
+        .value = "";
+
+    document
+        .getElementById("productBUnit")
+        .value = "g";
+
+
+    document
+        .getElementById("result")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("resultContent")
+        .innerHTML = "";
+
 }
 
 
