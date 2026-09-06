@@ -50,13 +50,21 @@
 <main class="container">
 
     <section class="card search-card">
-        <label class="search-label" for="productName">商品を検索</label>
+        <div class="search-category-group">
+            <label class="search-label" for="searchCategory">カテゴリー</label>
+            <select id="searchCategory">
+                <option value="">すべて</option>
+            </select>
+        </div>
+        <label class="search-label search-label-spaced" for="productName">商品名・キーワード検索</label>
         <div class="search-row">
             <div class="input-wrap">
-                <input id="productName" type="text" value="アタック抗菌EX" placeholder="商品名を入力…" autocomplete="off">
-                <div id="suggestions" class="suggestions"></div>
+                <input id="productName" type="text" placeholder="商品名やキーワードを入力してください" autocomplete="off">
             </div>
-            <button class="btn btn-primary" onclick="searchProduct()">検索</button>
+            <div class="search-row-actions">
+                <button class="btn btn-primary" type="button" onclick="searchProduct()">検索</button>
+                <button class="btn btn-secondary" type="button" onclick="clearSearch()">クリア</button>
+            </div>
         </div>
     </section>
 
@@ -144,25 +152,9 @@
 
         <h2>地域を設定してください</h2>
 
-        <label>地方</label>
+        <div id="cityList"></div>
 
-        <select id="regionSelect">
-            <option>九州</option>
-        </select>
-
-        <label>都道府県</label>
-
-        <select id="prefectureSelect">
-            <option>福岡県</option>
-        </select>
-
-        <label>市町村</label>
-
-        <select id="citySelect">
-            <option>福岡市</option>
-        </select>
-
-        <button id="saveRegionBtn">
+        <button id="saveRegionBtn" type="button">
 
             決定
 
@@ -171,34 +163,10 @@
     </div>
 
 </div>
-<div id="citySettings" class="modal hidden">
-
-    <div class="modal-content">
-
-        <h2>地域設定</h2>
-
-        <div id="cityList">
-            ここに地域一覧が表示されます
-        </div>
-
-        <div class="region-buttons">
-
-            <button id="closeCitySettings" class="secondary-btn">
-                戻る
-            </button>
-
-            <button id="saveCitySettings" class="primary-btn">
-                決定
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
 <div id="footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/@zxing/browser@latest"></script>
+<script src="region-settings.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

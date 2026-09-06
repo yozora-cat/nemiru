@@ -23,7 +23,14 @@
 <main class="container">
     <section class="card">
         <div class="card-header"><span class="card-icon">⚙️</span><h2>設定</h2></div>
-        <div class="empty-state"><p>設定ページは準備中です。</p></div>
+    </section>
+
+    <section class="card">
+        <div class="card-header"><span class="card-icon">📍</span><h2>地域設定</h2></div>
+
+        <div id="settingsCityList" class="city-list"></div>
+
+        <button class="btn btn-primary btn-block" type="button" id="saveSettingsRegionBtn">決定</button>
     </section>
 </main>
 <nav class="bottom-nav" aria-label="主要メニュー">
@@ -31,5 +38,8 @@
     <a class="bottom-nav-item" href="unit-price.html"><span class="bottom-nav-icon" aria-hidden="true">🧮</span><span>単価計算</span></a>
     <a class="bottom-nav-item is-active" href="settings.html" aria-current="page"><span class="bottom-nav-icon" aria-hidden="true">⚙️</span><span>設定</span></a>
 </nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="region-settings.js"></script>
+<script src="settings.js"></script>
 </body>
 </html>

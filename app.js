@@ -51,111 +51,181 @@ async function loadProducts() {
 
     console.log("商品マスター読込完了");
     console.log(products[0]);
+
+    populateSearchCategories();
 }
 
-loadProducts();
-function normalizeText(str) {
-    return str
-        .normalize("NFKC") // 半角→全角
-        .replace(/[\u3041-\u3096]/g, ch =>
-            String.fromCharCode(ch.charCodeAt(0) + 0x60)
-        ) // ひらがな→カタカナ
-        .toLowerCase()
-        .replace(/\s+/g, "");
+function populateSearchCategories() {
+
+    const select = document.getElementById("searchCategory");
+
+    if (!select) return;
+
+    const categories = [...new Set(
+        products
+            .map(product => product.minor_category)
+            .filter(category => category)
+    )].sort();
+
+    select.innerHTML = '<option value="">すべて</option>';
+
+    categories.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        select.appendChild(option);
+    });
 }
-function findBrandCodes(keyword) {
 
-    keyword = normalizeText(keyword);
+function productMatchesSearch(product, searchWord) {
 
-    const result = [];
+    if (normalizeText(product.product_name).includes(searchWord)) {
+        return true;
+    }
 
-    Object.entries(brandMap).forEach(([code, brand]) => {
+    if (!product.search_keywords) {
+        return false;
+    }
 
-        const hit =
-            normalizeText(brand.brand_name).includes(keyword) ||
+    return product.search_keywords
+        .split(",")
+        .map(keyword => normalizeText(keyword.trim()))
+        .some(keyword =>
+            keyword.includes(searchWord) ||
+            searchWord.includes(keyword)
+        );
+}
 
-            brand.search_keywords.some(k =>
-                normalizeText(k).includes(keyword)
-            );
+const INITIAL_RESULT_HTML = `
+        <div class="card-header">
+            <span class="card-icon">📊</span>
+            <h2>検索結果</h2>
+        </div>
+        <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <p>商品名を入力して検索してください</p>
+        </div>`;
 
-        if (hit) {
-            result.push(code);
+const INITIAL_RANKING_HTML = `
+        <div class="card-header">
+            <span class="card-icon">🏪</span>
+            <h2>店舗ランキング</h2>
+        </div>
+        <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <p>商品を検索すると店舗別の最安値が表示されます</p>
+        </div>`;
+
+function resetSearchResults() {
+
+    document.getElementById("result").innerHTML = INITIAL_RESULT_HTML;
+    document.getElementById("ranking").innerHTML = INITIAL_RANKING_HTML;
+}
+
+function clearSearch() {
+
+    document.getElementById("productName").value = "";
+    document.getElementById("searchCategory").value = "";
+
+    resetSearchResults();
+}
+
+function renderProductSearchResults(matches) {
+
+    const resultEl = document.getElementById("result");
+
+    if (matches.length === 0) {
+        resultEl.innerHTML = `
+<div class="card-header">
+    <span class="card-icon">🔍</span>
+    <h2>検索結果</h2>
+</div>
+<div class="empty-state">
+    <div class="empty-state-icon">🔍</div>
+    <p>該当する商品が見つかりません</p>
+</div>`;
+        document.getElementById("ranking").innerHTML = INITIAL_RANKING_HTML;
+        return;
+    }
+
+    const header = document.createElement("div");
+    header.className = "card-header";
+    header.innerHTML = `
+    <span class="card-icon">🔍</span>
+    <h2>検索結果（${matches.length}件）</h2>`;
+
+    const list = document.createElement("div");
+    list.className = "product-search-list";
+
+    matches.forEach(product => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "product-search-item";
+
+        const name = document.createElement("span");
+        name.className = "product-search-name";
+        name.textContent = product.product_name;
+
+        item.appendChild(name);
+
+        if (product.minor_category) {
+            const category = document.createElement("span");
+            category.className = "product-search-category";
+            category.textContent = product.minor_category;
+            item.appendChild(category);
         }
 
+        item.onclick = () => selectSearchProduct(product.product_name);
+        list.appendChild(item);
     });
 
-    return result;
-
-}
-let scanner = null;
-let stores = [];
-let brands = [];
-let brandMap = {};
-async function loadBrands() {
-
-    const { data, error } = await db
-        .from("brands")
-        .select("*")
-        .order("brand_name");
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    brands = data;
-console.log(data);
-    brandMap = {};
-
-    data.forEach(brand => {
-
-        brandMap[brand.brand_code] = {
-
-            brand_name: brand.brand_name,
-
-            search_keywords: (brand.search_keywords || "")
-                .split(",")
-                .map(k => k.trim().toLowerCase())
-
-        };
-
-    });
-
-    console.log("ブランド読込完了");
-    console.log(brandMap);
-
-}
-async function loadStores() {
-
-    const { data, error } = await db
-        .from("store_master")
-        .select("*")
-        .order("store_name");
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    stores = data;
-
-    console.log("店舗データ読み込み完了");
-    console.log(stores);
-    console.log(
-       [...new Set(stores.map(s => s.city))]
-    );
+    resultEl.innerHTML = "";
+    resultEl.appendChild(header);
+    resultEl.appendChild(list);
+    document.getElementById("ranking").innerHTML = INITIAL_RANKING_HTML;
 }
 
-loadBrands();
-loadStores();
-console.log("ネミル 起動");
-console.log("Supabase接続完了");
+async function selectSearchProduct(productName) {
+
+    document.getElementById("newProduct").value = productName;
+    await showProductDetail(productName);
+}
+
 async function searchProduct() {
 
-    const name =
-        document.getElementById("productName").value;
+    const keyword =
+        document.getElementById("productName").value.trim();
 
-    console.log("検索:", name);
+    const category =
+        document.getElementById("searchCategory").value;
+
+    if (!keyword && !category) {
+        showToast("商品名を入力するか、カテゴリーを選択してください", "error");
+        return;
+    }
+
+    console.log("検索:", keyword, "カテゴリー:", category || "すべて");
+
+    const searchWord = keyword ? normalizeText(keyword) : "";
+
+    const matches = products.filter(product => {
+        if (category && product.minor_category !== category) {
+            return false;
+        }
+
+        if (!keyword) {
+            return true;
+        }
+
+        return productMatchesSearch(product, searchWord);
+    });
+
+    renderProductSearchResults(matches);
+}
+
+async function showProductDetail(name) {
+
+    console.log("商品詳細:", name);
 
     const { data, error } = await db
         .from("product_master")
@@ -273,6 +343,104 @@ ${product.affiliate_url ? `
 
 renderProductRanking(priceData);
 }
+
+loadProducts();
+function normalizeText(str) {
+    return str
+        .normalize("NFKC") // 半角→全角
+        .replace(/[\u3041-\u3096]/g, ch =>
+            String.fromCharCode(ch.charCodeAt(0) + 0x60)
+        ) // ひらがな→カタカナ
+        .toLowerCase()
+        .replace(/\s+/g, "");
+}
+function findBrandCodes(keyword) {
+
+    keyword = normalizeText(keyword);
+
+    const result = [];
+
+    Object.entries(brandMap).forEach(([code, brand]) => {
+
+        const hit =
+            normalizeText(brand.brand_name).includes(keyword) ||
+
+            brand.search_keywords.some(k =>
+                normalizeText(k).includes(keyword)
+            );
+
+        if (hit) {
+            result.push(code);
+        }
+
+    });
+
+    return result;
+
+}
+let scanner = null;
+let stores = [];
+let brands = [];
+let brandMap = {};
+async function loadBrands() {
+
+    const { data, error } = await db
+        .from("brands")
+        .select("*")
+        .order("brand_name");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    brands = data;
+console.log(data);
+    brandMap = {};
+
+    data.forEach(brand => {
+
+        brandMap[brand.brand_code] = {
+
+            brand_name: brand.brand_name,
+
+            search_keywords: (brand.search_keywords || "")
+                .split(",")
+                .map(k => k.trim().toLowerCase())
+
+        };
+
+    });
+
+    console.log("ブランド読込完了");
+    console.log(brandMap);
+
+}
+async function loadStores() {
+
+    const { data, error } = await db
+        .from("store_master")
+        .select("*")
+        .order("store_name");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    stores = data;
+
+    console.log("店舗データ読み込み完了");
+    console.log(stores);
+    console.log(
+       [...new Set(stores.map(s => s.city))]
+    );
+}
+
+loadBrands();
+loadStores();
+console.log("ネミル 起動");
+console.log("Supabase接続完了");
 function calculatePriceStats(priceData) {
 
     if (!priceData || priceData.length === 0) {
@@ -508,7 +676,7 @@ if(error){
     document.getElementById("newPrice").value = "";
 
     document.getElementById("productName").value = product;
-    await searchProduct();
+    await showProductDetail(product);
 
     showToast("投稿しました");
 
@@ -536,8 +704,7 @@ async function loadPrices(productName = "") {
     }
 
     console.log("取得した価格データ", data);
-    const selectedCities =
-    　　JSON.parse(localStorage.getItem("selectedCities")) || [];
+    const selectedCities = getSelectedCities();
     let filteredData = data;
 
 　　if (selectedCities.length > 0) {
@@ -589,7 +756,6 @@ return latestData;
 
 loadPrices();
 const productInput = document.getElementById("productName");
-const suggestionsBox = document.getElementById("suggestions");
 const newProductInput =
     document.getElementById("newProduct");
 
@@ -613,9 +779,7 @@ function showProductSuggestions(inputElement, suggestionBox, onSelect) {
     const searchWord = normalizeText(keyword);
 
     const matches = products.filter(product =>
-        normalizeText(product.product_name).includes(searchWord) ||
-        (product.search_keywords &&
-            normalizeText(product.search_keywords).includes(searchWord))
+        productMatchesSearch(product, searchWord)
     );
 
     matches.forEach(product => {
@@ -637,8 +801,14 @@ function showProductSuggestions(inputElement, suggestionBox, onSelect) {
     });
 }
 
-productInput.addEventListener("input", () => {
-    showProductSuggestions(productInput, suggestionsBox, searchProduct);
+productInput.addEventListener("keydown", (event) => {
+
+    if (event.key === "Enter") {
+
+        searchProduct();
+
+    }
+
 });
 storeInput.addEventListener("input", () => {
 
@@ -650,8 +820,7 @@ storeInput.addEventListener("input", () => {
 
     const searchWord = normalizeText(keyword);
 
-    const selectedCities =
-      JSON.parse(localStorage.getItem("selectedCities")) || [];
+    const selectedCities = getSelectedCities();
 
     const matchedBrandCodes = findBrandCodes(searchWord);
 
@@ -709,8 +878,7 @@ storeInput.addEventListener("focus", () => {
 
     const searchWord = normalizeText(keyword);
 
-    const selectedCities =
-        JSON.parse(localStorage.getItem("selectedCities")) || [];
+        const selectedCities = getSelectedCities();
 
     const matchedBrandCodes = findBrandCodes(searchWord);
 
@@ -759,21 +927,8 @@ storeInput.addEventListener("focus", () => {
     });
 
 });
-productInput.addEventListener("keydown", (event) => {
-
-    if (event.key === "Enter") {
-
-        searchProduct();
-
-    }
-
-});
 document.addEventListener("click", (event) => {
 
-    if (
-        event.target !== productInput &&
-        !suggestionsBox.contains(event.target)
-    ) {        suggestionsBox.innerHTML = "";    }
     if (
         event.target !== newProductInput &&
         !newSuggestionsBox.contains(event.target)
@@ -786,9 +941,6 @@ document.addEventListener("click", (event) => {
     ) {
         storeSuggestionsBox.innerHTML = "";
     }
-});
-productInput.addEventListener("focus", () => {
-    showProductSuggestions(productInput, suggestionsBox, searchProduct);
 });
 
 /*
@@ -916,288 +1068,58 @@ newProductInput.addEventListener("focus", () => {
     showProductSuggestions(newProductInput, newSuggestionsBox);
 });
 
-function getDistinctOptions(rows, codeKey, labelKey) {
-
-    const map = new Map();
-
-    rows.forEach(row => {
-        const code = row[codeKey];
-        const label = row[labelKey];
-
-        if (code == null || code === "" || map.has(String(code))) {
-            return;
-        }
-
-        map.set(String(code), label);
-    });
-
-    return [...map.entries()]
-        .map(([code, label]) => ({ code, label }))
-        .sort((a, b) => String(a.label).localeCompare(String(b.label), "ja"));
-}
-
-function fillCodeSelect(selectEl, options) {
-
-    selectEl.innerHTML = "";
-
-    options.forEach(({ code, label }) => {
-        const option = document.createElement("option");
-        option.value = code;
-        option.textContent = label;
-        selectEl.appendChild(option);
-    });
-}
-
-function getUserSettings() {
-
-    return {
-        brand_code: localStorage.getItem("brand_code") || "",
-        region_code: localStorage.getItem("region_code") || "",
-        prefecture_code: localStorage.getItem("prefecture_code") || "",
-        city: localStorage.getItem("city") || ""
-    };
-}
-
-function saveRegionSettings({ region_code, prefecture_code, city }) {
-
-    localStorage.setItem("region_code", region_code);
-    localStorage.setItem("prefecture_code", prefecture_code);
-    localStorage.setItem("city", city);
-    localStorage.removeItem("region");
-    localStorage.removeItem("prefecture");
-}
-
-async function loadRegions() {
-
-    const { data, error } = await db
-        .from("store_master")
-        .select("region, region_code")
-        .order("region_code");
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    const regions = getDistinctOptions(data, "region_code", "region");
-    const regionSelect = document.getElementById("regionSelect");
-
-    fillCodeSelect(regionSelect, regions);
-
-    const { region_code: savedRegionCode } = getUserSettings();
-    const selectedRegionCode =
-        savedRegionCode && regions.some(item => item.code === savedRegionCode)
-            ? savedRegionCode
-            : regions[0]?.code;
-
-    if (selectedRegionCode) {
-        regionSelect.value = selectedRegionCode;
-        await loadPrefectures(selectedRegionCode);
-    }
-}
-
-async function loadPrefectures(regionCode) {
-
-    const { data, error } = await db
-        .from("store_master")
-        .select("prefecture, prefecture_code")
-        .eq("region_code", regionCode)
-        .order("prefecture_code");
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    const prefectures = getDistinctOptions(data, "prefecture_code", "prefecture");
-    const prefectureSelect = document.getElementById("prefectureSelect");
-
-    fillCodeSelect(prefectureSelect, prefectures);
-
-    const { prefecture_code: savedPrefectureCode } = getUserSettings();
-    const selectedPrefectureCode =
-        savedPrefectureCode && prefectures.some(item => item.code === savedPrefectureCode)
-            ? savedPrefectureCode
-            : prefectures[0]?.code;
-
-    if (selectedPrefectureCode) {
-        prefectureSelect.value = selectedPrefectureCode;
-        await loadCities(selectedPrefectureCode);
-    }
-}
-
-async function loadCities(prefectureCode) {
-
-    const { data, error } = await db
-        .from("store_master")
-        .select("city")
-        .eq("prefecture_code", Number(prefectureCode))
-        .order("city");
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    const cities = [...new Set(data.map(row => row.city).filter(Boolean))];
-    const citySelect = document.getElementById("citySelect");
-
-    citySelect.innerHTML = "";
-
-    cities.forEach(city => {
-        const option = document.createElement("option");
-        option.value = city;
-        option.textContent = city;
-        citySelect.appendChild(option);
-    });
-
-    const { city: savedCity } = getUserSettings();
-
-    if (savedCity && cities.includes(savedCity)) {
-        citySelect.value = savedCity;
-    }
-}
-
 const regionModal =
 document.getElementById("regionModal");
 
-const regionSelect =
-document.getElementById("regionSelect");
+if (regionModal) {
 
-const prefectureSelect =
-document.getElementById("prefectureSelect");
+    if (hasRegionSettings()) {
 
-if(localStorage.getItem("city")){
+        regionModal.style.display = "none";
 
-    regionModal.style.display="none";
+    } else {
 
-}else{
+        renderRegionCitySettings("cityList");
 
-    loadRegions();
+    }
+
+    document
+        .getElementById("saveRegionBtn")
+        .addEventListener("click", () => {
+
+            try {
+                const checkedCities =
+                    getCheckedCitiesFromContainer("cityList");
+
+                if (checkedCities.length === 0) {
+                    showToast("地域を1つ以上選択してください", "error");
+                    return;
+                }
+
+                saveSelectedCities(checkedCities);
+                regionModal.style.display = "none";
+                showToast("保存しました");
+            } catch (error) {
+                console.error(error);
+                showToast("保存できませんでした", "error");
+            }
+
+        });
 
 }
 
-regionSelect.addEventListener("change", () => {
+const settingsButton = document.getElementById("settingsButton");
 
-    loadPrefectures(regionSelect.value);
+if (settingsButton && regionModal) {
 
-});
+    settingsButton.addEventListener("click", async () => {
 
-prefectureSelect.addEventListener("change", () => {
-
-    loadCities(prefectureSelect.value);
-
-});
-
-document
-.getElementById("saveRegionBtn")
-.addEventListener("click",()=>{
-
-    try {
-        saveRegionSettings({
-            region_code: document.getElementById("regionSelect").value,
-            prefecture_code: document.getElementById("prefectureSelect").value,
-            city: document.getElementById("citySelect").value
-        });
-
-        regionModal.style.display="none";
-        showToast("保存しました");
-    } catch (error) {
-        console.error(error);
-        showToast("保存できませんでした", "error");
-    }
-
-});
-function openCitySettings(){
-
-    const cityList =
-        document.getElementById("cityList");
-
-    cityList.innerHTML = "";
-
-    const selectedCities =
-     JSON.parse(localStorage.getItem("selectedCities")) || [];
-
-    const cities = [...new Set(
-        stores
-            .map(store => store.city)
-            .filter(Boolean)
-    )].sort();
-
-    cities.forEach(city => {
-
-        const label = document.createElement("label");
-
-        const checked =
-           selectedCities.includes(city)
-               ? "checked"
-               : "";
-
-        label.innerHTML = `
-            <input
-                 type="checkbox"
-                 value="${city}"
-                 ${checked}
-            >
-            ${city}
-        `;
-
-        cityList.appendChild(label);
-        cityList.appendChild(document.createElement("br"));
+        regionModal.style.display = "flex";
+        await renderRegionCitySettings("cityList");
 
     });
 
-    document
-        .getElementById("citySettings")
-        .classList.remove("hidden");
-
 }
-// 設定ボタン
-document
-.getElementById("settingsButton")
-.addEventListener("click", () => {
-
-    openCitySettings();
-
-});
-
-document
-.getElementById("closeCitySettings")
-.addEventListener("click", () => {
-
-    document
-        .getElementById("citySettings")
-        .classList.add("hidden");
-
-});
-
-document
-.getElementById("saveCitySettings")
-.addEventListener("click", () => {
-
-    try {
-        const checkedCities = [];
-
-        document
-        .querySelectorAll("#cityList input:checked")
-        .forEach(cb => {
-
-            checkedCities.push(cb.value);
-
-        });
-
-        localStorage.setItem(
-            "selectedCities",
-            JSON.stringify(checkedCities)
-        );
-
-        showToast("保存しました");
-    } catch (error) {
-        console.error(error);
-        showToast("保存できませんでした", "error");
-    }
-
-});
 async function loadFooter() {
 
     const footer = document.getElementById("footer");
