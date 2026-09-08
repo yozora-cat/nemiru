@@ -1106,6 +1106,15 @@ if (regionModal) {
 
         });
 
+    regionModal.addEventListener("click", async (event) => {
+
+        if (event.target !== regionModal) return;
+
+        regionModal.style.display = "none";
+        await renderRegionCitySettings("cityList");
+
+    });
+
 }
 
 const settingsButton = document.getElementById("settingsButton");
